@@ -1,0 +1,109 @@
+{
+  "realm": "plagas",
+  "enabled": true,
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 30,
+  "accessTokenLifespan": 1800,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "sslRequired": "none",
+  "roles": {
+    "realm": [
+      { "name": "agricultor", "description": "Agricultor: gestiona sus propios diagnósticos" },
+      { "name": "tecnico", "description": "Técnico agrónomo: ve diagnósticos de todos" },
+      { "name": "admin", "description": "Administrador: gestiona el catálogo" }
+    ]
+  },
+  "users": [
+    {
+      "username": "agricultor1",
+      "enabled": true,
+      "email": "agricultor1@plagas-palta.test",
+      "emailVerified": true,
+      "firstName": "Agricultor",
+      "lastName": "Demo",
+      "credentials": [
+        { "type": "password", "value": "plagas", "temporary": false }
+      ],
+      "realmRoles": ["agricultor"]
+    },
+    {
+      "username": "tecnico1",
+      "enabled": true,
+      "email": "tecnico1@plagas-palta.test",
+      "emailVerified": true,
+      "firstName": "Técnico",
+      "lastName": "Demo",
+      "credentials": [
+        { "type": "password", "value": "plagas", "temporary": false }
+      ],
+      "realmRoles": ["tecnico"]
+    },
+    {
+      "username": "admin1",
+      "enabled": true,
+      "email": "admin1@plagas-palta.test",
+      "emailVerified": true,
+      "firstName": "Admin",
+      "lastName": "Demo",
+      "credentials": [
+        { "type": "password", "value": "plagas", "temporary": false }
+      ],
+      "realmRoles": ["admin"]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "api-plagas",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "plagas-secret-dev-only",
+      "bearerOnly": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    },
+    {
+      "clientId": "app-plagas-frontend",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": [
+        "http://localhost:5173/login/callback",
+        "http://localhost:8080/login/callback"
+      ],
+      "webOrigins": ["+"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      }
+    }
+  ],
+  "protocolMappers": [
+    {
+      "name": "roles",
+      "protocol": "openid-connect",
+      "protocolMapper": "oidc-usermodel-realm-role-mapper",
+      "consentRequired": false,
+      "config": {
+        "multivalued": "true",
+        "userinfo.token.claim": "true",
+        "id.token.claim": "true",
+        "access.token.claim": "true",
+        "claim.name": "roles",
+        "jsonType.array": "true"
+      }
+    }
+  ]
+}

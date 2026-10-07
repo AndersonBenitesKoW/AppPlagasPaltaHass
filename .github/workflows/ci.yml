@@ -1,0 +1,161 @@
+name: ci
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "20"
+
+jobs:
+  # =====================================================
+  # Backend
+  # =====================================================
+  backend:
+    name: Backend (lint + types + test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "0.5"
+          enable-cache: true
+
+      - name: Sincronizar dependencias
+        run: uv sync --extra torch-cpu
+
+      - name: Ruff
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+
+      - name: mypy
+        run: uv run mypy src
+
+      - name: import-linter
+        run: uv run lint-imports
+
+      - name: pip-audit
+        run: |
+          uv export --no-dev -o requirements.txt
+          uv run pip-audit -r requirements.txt || true
+
+      - name: Tests
+        run: uv run pytest --cov-report=xml --cov-report=term
+
+      - name: Subir coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.xml
+
+  # =====================================================
+  # Frontend
+  # =====================================================
+  frontend:
+    name: Frontend (lint + types + test)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm run test:run -- --coverage --reporter=verbose
+
+      - name: Subir coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/coverage-final.json
+
+  # =====================================================
+  # Contrato API (drift check)
+  # =====================================================
+  contrato:
+    name: Contrato API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar backend (sin YOLO)
+        working-directory: backend
+        run: |
+          pip install fastapi pydantic pydantic-settings python-multipart sqlalchemy[asyncio] anyio httpx
+
+      - name: Generar OpenAPI
+        working-directory: backend
+        run: |
+          uv run python -m plagas.scripts.exportar_openapi > ../openapi.json || \
+            python -c "from fastapi.openapi.utils import get_openapi; print('{}')" > ../openapi.json
+
+      - name: Diff contra versionado
+        run: |
+          if git diff --exit-code openapi.json; then
+            echo "OK: openapi.json no cambió"
+          else
+            echo "ERROR: openapi.json cambió. Ejecutar make gen-api localmente."
+            exit 1
+          fi
+
+      - name: Regenerar tipos
+        working-directory: frontend
+        run: npm run gen:api
+
+      - name: Diff tipos
+        working-directory: frontend
+        run: |
+          if git diff --exit-code src/core/http/schema.d.ts; then
+            echo "OK: tipos del frontend no cambiaron"
+          else
+            echo "ERROR: schema.d.ts cambió. Ejecutar make gen-api localmente."
+            exit 1
+          fi

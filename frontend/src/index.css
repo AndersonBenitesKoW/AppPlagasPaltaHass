@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family:
+    'Outfit',
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background-color: #0a0f0d;
+  color: #f1f5f9;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism custom utilities */
+.glass-panel {
+  background: rgba(18, 25, 21, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(52, 211, 153, 0.12);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(52, 211, 153, 0.28);
+  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.15);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25);
+}
+
+/* Smooth custom scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0f0d;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e2d24;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}

@@ -1,0 +1,11 @@
+services:
+  backend:
+    command: uvicorn plagas.main:create_app --factory --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend/src:/app/src
+
+  frontend:
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
+      - ./frontend/index.html:/app/index.html:ro

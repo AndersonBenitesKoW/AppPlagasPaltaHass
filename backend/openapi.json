@@ -1,0 +1,742 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "App Plagas Palta Hass API",
+    "description": "API para diagnóstico de plagas y enfermedades en palta Hass con modelos YOLO",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Liveness",
+        "operationId": "liveness_health_live_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Liveness Health Live Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Readiness",
+        "operationId": "readiness_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Readiness Health Ready Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnosticos": {
+      "post": {
+        "tags": [
+          "diagnosticos"
+        ],
+        "summary": "Crear Diagnostico",
+        "operationId": "crear_diagnostico_api_v1_diagnosticos_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_crear_diagnostico_api_v1_diagnosticos_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticoResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "diagnosticos"
+        ],
+        "summary": "Listar Historial",
+        "operationId": "listar_historial_api_v1_diagnosticos_get",
+        "parameters": [
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50,
+              "title": "Limite"
+            }
+          },
+          {
+            "name": "desplazamiento",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Desplazamiento"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DiagnosticoResponse"
+                  },
+                  "title": "Response Listar Historial Api V1 Diagnosticos Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnosticos/batch": {
+      "post": {
+        "tags": [
+          "diagnosticos"
+        ],
+        "summary": "Crear Diagnosticos Lote",
+        "operationId": "crear_diagnosticos_lote_api_v1_diagnosticos_batch_post",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_crear_diagnosticos_lote_api_v1_diagnosticos_batch_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticosBatchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/diagnosticos/{diagnostico_id}": {
+      "get": {
+        "tags": [
+          "diagnosticos"
+        ],
+        "summary": "Obtener Diagnostico",
+        "operationId": "obtener_diagnostico_api_v1_diagnosticos__diagnostico_id__get",
+        "parameters": [
+          {
+            "name": "diagnostico_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Diagnostico Id"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticoResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalogo": {
+      "get": {
+        "tags": [
+          "catalogo"
+        ],
+        "summary": "Listar Catalogo",
+        "operationId": "listar_catalogo_api_v1_catalogo_get",
+        "parameters": [
+          {
+            "name": "organo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Organo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnfermedadResponse"
+                  },
+                  "title": "Response Listar Catalogo Api V1 Catalogo Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalogo/{codigo}": {
+      "get": {
+        "tags": [
+          "catalogo"
+        ],
+        "summary": "Obtener Enfermedad",
+        "operationId": "obtener_enfermedad_api_v1_catalogo__codigo__get",
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Codigo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnfermedadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/imagenes/{nombre_archivo}": {
+      "get": {
+        "tags": [
+          "imagenes"
+        ],
+        "summary": "Obtener Imagen",
+        "operationId": "obtener_imagen_api_v1_imagenes__nombre_archivo__get",
+        "parameters": [
+          {
+            "name": "nombre_archivo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Nombre Archivo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Body_crear_diagnostico_api_v1_diagnosticos_post": {
+        "properties": {
+          "imagen": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Imagen"
+          },
+          "organo": {
+            "$ref": "#/components/schemas/Organo",
+            "default": "hoja"
+          }
+        },
+        "type": "object",
+        "required": [
+          "imagen"
+        ],
+        "title": "Body_crear_diagnostico_api_v1_diagnosticos_post"
+      },
+      "Body_crear_diagnosticos_lote_api_v1_diagnosticos_batch_post": {
+        "properties": {
+          "imagenes": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Imagenes"
+          },
+          "organo": {
+            "$ref": "#/components/schemas/Organo",
+            "default": "hoja"
+          }
+        },
+        "type": "object",
+        "required": [
+          "imagenes"
+        ],
+        "title": "Body_crear_diagnosticos_lote_api_v1_diagnosticos_batch_post"
+      },
+      "CajaSchema": {
+        "properties": {
+          "x1": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "X1"
+          },
+          "y1": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Y1"
+          },
+          "x2": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "X2"
+          },
+          "y2": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Y2"
+          }
+        },
+        "type": "object",
+        "required": [
+          "x1",
+          "y1",
+          "x2",
+          "y2"
+        ],
+        "title": "CajaSchema"
+      },
+      "DeteccionSchema": {
+        "properties": {
+          "clase": {
+            "type": "string",
+            "title": "Clase"
+          },
+          "confianza": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confianza"
+          },
+          "caja": {
+            "$ref": "#/components/schemas/CajaSchema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clase",
+          "confianza",
+          "caja"
+        ],
+        "title": "DeteccionSchema"
+      },
+      "DiagnosticoResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "organo": {
+            "$ref": "#/components/schemas/Organo"
+          },
+          "propietario_id": {
+            "type": "string",
+            "title": "Propietario Id"
+          },
+          "es_sano": {
+            "type": "boolean",
+            "title": "Es Sano"
+          },
+          "enfermedades": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Enfermedades"
+          },
+          "detecciones": {
+            "items": {
+              "$ref": "#/components/schemas/DeteccionSchema"
+            },
+            "type": "array",
+            "title": "Detecciones"
+          },
+          "imagen_url": {
+            "type": "string",
+            "title": "Imagen Url"
+          },
+          "creado_en": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Creado En"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "organo",
+          "propietario_id",
+          "es_sano",
+          "enfermedades",
+          "detecciones",
+          "imagen_url",
+          "creado_en"
+        ],
+        "title": "DiagnosticoResponse"
+      },
+      "DiagnosticosBatchResponse": {
+        "properties": {
+          "diagnosticos": {
+            "items": {
+              "$ref": "#/components/schemas/DiagnosticoResponse"
+            },
+            "type": "array",
+            "title": "Diagnosticos"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "total_enfermos": {
+            "type": "integer",
+            "title": "Total Enfermos"
+          },
+          "total_sanos": {
+            "type": "integer",
+            "title": "Total Sanos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "diagnosticos",
+          "total",
+          "total_enfermos",
+          "total_sanos"
+        ],
+        "title": "DiagnosticosBatchResponse"
+      },
+      "EnfermedadResponse": {
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "title": "Codigo"
+          },
+          "nombre": {
+            "type": "string",
+            "title": "Nombre"
+          },
+          "organo": {
+            "type": "string",
+            "title": "Organo"
+          },
+          "severidad": {
+            "type": "string",
+            "title": "Severidad"
+          },
+          "descripcion": {
+            "type": "string",
+            "title": "Descripcion"
+          },
+          "sintomas": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Sintomas"
+          },
+          "recomendaciones": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recomendaciones"
+          }
+        },
+        "type": "object",
+        "required": [
+          "codigo",
+          "nombre",
+          "organo",
+          "severidad",
+          "descripcion",
+          "sintomas",
+          "recomendaciones"
+        ],
+        "title": "EnfermedadResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Organo": {
+        "type": "string",
+        "enum": [
+          "hoja",
+          "fruto"
+        ],
+        "title": "Organo"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

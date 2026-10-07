@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "fecha": "2026-10-06",
+  "modelos": {
+    "hojas.pt": {
+      "version": "1.0.0",
+      "fecha": "2026-10-06",
+      "ruta_destino": "backend/models/hojas.pt",
+      "origen": "ml/runs/detect/train/weights/best.pt",
+      "tamanio_bytes": 19271962,
+      "sha256": "f345439d476e74d0e92cc2c46233c3d0ac3f8410f49c1d88459392dc8e739cd0",
+      "imgsz": 1024,
+      "conf_minima": 0.10,
+      "clases": [
+        "hoja_sana",
+        "antracnosis_hoja",
+        "plaga",
+        "deficiencia_nutricional"
+      ],
+      "metricas": {
+        "mAP50": null,
+        "mAP50-95": null,
+        "nota": "Completar despues de ejecutar yolo val sobre el split test"
+      }
+    }
+  },
+  "notas": [
+    "El campo sha256 debe coincidir con APP_SHA256_MODELO_HOJAS en .env",
+    "Las metricas se actualizan al promover una nueva version",
+    "Para verificar: sha256sum backend/models/hojas.pt"
+  ]
+}

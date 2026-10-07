@@ -1,0 +1,97 @@
+name: plagas-palta
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: plagas
+      POSTGRES_PASSWORD: plagas
+      POSTGRES_DB: plagas
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plagas"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "5432:5432"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: "true"
+    volumes:
+      - ./infra/keycloak:/opt/keycloak/data/import:ro
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file: ./backend/.env
+    environment:
+      # Forzar host.docker.internal si se quiere conectar a servicios del host
+      APP_DATABASE_URL: postgresql+asyncpg://plagas:plagas@db:5432/plagas
+      APP_OIDC_JWKS_URL: http://keycloak:8080/realms/plagas/protocol/openid-connect/certs
+    depends_on:
+      db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    volumes:
+      - imagenes:/app/data/imagenes
+      - ./backend/models:/app/models:ro
+    ports:
+      - "8000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    security_opt:
+      - "no-new-privileges:true"
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 3g
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      API_BASE_URL: http://localhost:8000
+      AUTH_URL: http://localhost:8081/realms/plagas
+      IMAGENES_URL: http://localhost:8000
+      APP_ENV: dev
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - NET_BIND_SERVICE
+    security_opt:
+      - "no-new-privileges:true"
+
+volumes:
+  pgdata:
+  imagenes:

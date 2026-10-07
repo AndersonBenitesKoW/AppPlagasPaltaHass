@@ -1,0 +1,83 @@
+# =====================================================
+# App Plagas Palta Hass — .gitignore raíz
+# =====================================================
+
+# --- Python / uv -------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.eggs/
+*.egg-info/
+.uv-cache/
+
+# --- Entornos virtuales por versión ------------------
+.python-version
+# (pyenv-win usa .python-version; en Linux/macOS lo lee pyenv también)
+
+# --- Type checkers / linters --------------------------
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage/
+coverage.xml
+*.cover
+
+# --- Node / Vite / Frontend --------------------------
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# --- Frontend: tests --------------------------------
+playwright-report/
+test-results/
+.nyc_output/
+
+# --- IDEs -------------------------------------------
+.vscode/
+!.vscode/settings.json.example
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- Entornos y secretos -----------------------------
+.env
+.env.local
+.env.*.local
+!.env.example
+.envrc
+
+# --- Modelos y datasets -----------------------------
+# Pesos: NO se versionan; se montan por volumen o se descargan en CI
+*.pt
+*.onnx
+*.engine
+*.tflite
+*.pb
+models/*.pt
+!models/manifest.json          # el manifest sí se versiona
+
+# Datasets y derivados de entrenamiento
+ml/datasets/
+ml/runs/
+ml/revision/
+*.zip
+!backend/models/manifest.json
+
+# --- Imágenes subidas en dev -------------------------
+data/imagenes/
+
+# --- Terraform / IaC --------------------------------
+*.tfstate
+*.tfstate.*
+.terraform/
