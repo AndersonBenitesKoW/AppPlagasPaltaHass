@@ -1,0 +1,13 @@
+# Backend-specific ignores (en adición al raíz)
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+
+# Pesos (versionamos solo manifest.json)
+models/*.pt
+!models/manifest.json

@@ -1,0 +1,8 @@
+# Frontend-specific ignores (en adición al raíz)
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+playwright-report/
+test-results/
+coverage/
