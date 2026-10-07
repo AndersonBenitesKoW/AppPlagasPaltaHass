@@ -1,0 +1,29 @@
+[33mcommit 32d766480331cba45853dea135686452c9112042[m[33m ([m[1;31morigin/D4C[m[33m)[m
+Author: AndersonBenites <andersonbenitesy@gmail.com>
+Date:   Wed Oct 7 01:43:09 2026 -0500
+
+    subiendo el modelo de frutos
+
+ frutos/hojas/.reinicio_v2                          |   0
+ frutos/hojas/F1_curve.png                          | Bin [31m0[m -> [32m185768[m bytes
+ frutos/hojas/PR_curve.png                          | Bin [31m0[m -> [32m150447[m bytes
+ frutos/hojas/P_curve.png                           | Bin [31m0[m -> [32m164529[m bytes
+ frutos/hojas/R_curve.png                           | Bin [31m0[m -> [32m176693[m bytes
+ frutos/hojas/args.yaml                             | 106 [32m++++++++++++++++[m
+ frutos/hojas/confusion_matrix.png                  | Bin [31m0[m -> [32m135112[m bytes
+ frutos/hojas/confusion_matrix_normalized.png       | Bin [31m0[m -> [32m154696[m bytes
+ ...ts.out.tfevents.1791308042.13a917805f0d.21196.0 | Bin [31m0[m -> [32m359172[m bytes
+ frutos/hojas/labels.jpg                            | Bin [31m0[m -> [32m173136[m bytes
+ frutos/hojas/labels_correlogram.jpg                | Bin [31m0[m -> [32m225365[m bytes
+ frutos/hojas/results.csv                           | 133 [32m+++++++++++++++++++++[m
+ frutos/hojas/results.png                           | Bin [31m0[m -> [32m269710[m bytes
+ frutos/hojas/train_batch0.jpg                      | Bin [31m0[m -> [32m518946[m bytes
+ frutos/hojas/train_batch1.jpg                      | Bin [31m0[m -> [32m457479[m bytes
+ frutos/hojas/train_batch2.jpg                      | Bin [31m0[m -> [32m566566[m bytes
+ frutos/hojas/val_batch0_labels.jpg                 | Bin [31m0[m -> [32m558629[m bytes
+ frutos/hojas/val_batch0_pred.jpg                   | Bin [31m0[m -> [32m564957[m bytes
+ frutos/hojas/val_batch1_labels.jpg                 | Bin [31m0[m -> [32m627873[m bytes
+ frutos/hojas/val_batch1_pred.jpg                   | Bin [31m0[m -> [32m646531[m bytes
+ frutos/hojas/val_batch2_labels.jpg                 | Bin [31m0[m -> [32m675248[m bytes
+ frutos/hojas/val_batch2_pred.jpg                   | Bin [31m0[m -> [32m687744[m bytes
+ 22 files changed, 239 insertions(+)

@@ -1,10 +1,15 @@
 import { env } from '../../../core/config/env';
 import type { Diagnostico, DiagnosticosBatchResponse } from '../model/types';
 
-export async function enviarDiagnostico(file: File): Promise<Diagnostico> {
+export type Organo = 'hoja' | 'fruto';
+
+export async function enviarDiagnostico(
+  file: File,
+  organo: Organo = 'hoja',
+): Promise<Diagnostico> {
   const formData = new FormData();
   formData.append('imagen', file);
-  formData.append('organo', 'hoja');
+  formData.append('organo', organo);
 
   const response = await fetch(`${env.apiBaseUrl}/api/v1/diagnosticos`, {
     method: 'POST',
@@ -19,12 +24,17 @@ export async function enviarDiagnostico(file: File): Promise<Diagnostico> {
   return (await response.json()) as Diagnostico;
 }
 
-export async function enviarDiagnosticoLote(files: File[]): Promise<DiagnosticosBatchResponse> {
+export async function enviarDiagnosticoLote(
+  files: File[],
+  organo: Organo = 'hoja',
+): Promise<DiagnosticosBatchResponse> {
   const formData = new FormData();
+
   for (const file of files) {
     formData.append('imagenes', file);
   }
-  formData.append('organo', 'hoja');
+
+  formData.append('organo', organo);
 
   const response = await fetch(`${env.apiBaseUrl}/api/v1/diagnosticos/batch`, {
     method: 'POST',
