@@ -70,3 +70,6 @@ src/plagas/
 ```
 
 Ver [ARQUITECTURA.md](../ARQUITECTURA.md) para el detalle completo.
+
+cd backend
+uv run uvicorn plagas.main:create_app --factory --reload --port 8000

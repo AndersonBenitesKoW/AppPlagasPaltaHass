@@ -59,12 +59,10 @@ Thumbs.db
 
 # --- Modelos y datasets -----------------------------
 # Pesos: NO se versionan; se montan por volumen o se descargan en CI
-*.pt
 *.onnx
 *.engine
 *.tflite
 *.pb
-models/*.pt
 !models/manifest.json          # el manifest sí se versiona
 
 # Datasets y derivados de entrenamiento
