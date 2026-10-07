@@ -1,0 +1,193 @@
+{
+  "semilla": 42,
+  "proporciones": [
+    0.7,
+    0.2,
+    0.1
+  ],
+  "copias_exactas_descartadas": [
+    "test/IMG_20230111_154237_jpg.rf.bba79c6a427469c92390bb4e2a66e49e",
+    "test/IMG_20230111_154751_jpg.rf.e6476d00a0002ed0dde9031272d9daed",
+    "test/IMG_20260216_112810016_BURST0019_jpg.rf.c23937b4861e88a64d5fe13056ba2441",
+    "test/IMG_20260216_112819025_BURST0014_jpg.rf.f8f657caa33cea5b69238053cb6373ff",
+    "test/IMG_20260216_112847751_BURST0012_jpg.rf.fee8c06e514e23f5507a36fee483a8fb",
+    "test/IMG_20260218_090839712_BURST0014_jpg.rf.7eac6eb9367dbef530a4e2e725d4720f",
+    "test/IMG_20260219_181751_118_jpg.rf.50fb533adc6b44f4f3e38ada120bfd8c",
+    "test/IMG_20260219_182310786_BURST0001_COVER_jpg.rf.6716c29eefa0d80d3f8f828285ba5dd1",
+    "test/IMG_20260219_182310786_BURST0004_jpg.rf.45bf64bf9d815409c612ad006b4bdc9c",
+    "test/IMG_20260219_182314447_BURST0003_jpg.rf.9070b9c46d98c87f769e9a3c73ba8ee0",
+    "test/IMG_20260219_182314447_BURST0006_jpg.rf.548986f629d3b40736fdbbb007737e02",
+    "test/IMG_20260219_182314447_BURST0007_jpg.rf.5caa5894508dc120a74a3cdfb24e8bb3",
+    "test/download-35-_jpeg_jpg.rf.75bc680c53654439de76e10abf1c57ba",
+    "test/images-2025-06-03T121351_836_jpeg_jpg.rf.cf94d5f038d7a94436ae7278191e762e",
+    "test/proxy-image-7-_jpeg_jpg.rf.9de8fac27067617642427abd633f8e36",
+    "train/Avocado-3540_jpg.rf.d3f38c34d81bbf28dedce93c3ff74b7b",
+    "train/IMG_20230111_154538_jpg.rf.c99ff79edeac6b6c4d9f0f59319a2895",
+    "train/IMG_20230111_154803_jpg.rf.472773609cc76d1b8954f1d754450d0e",
+    "train/IMG_20230111_154842_jpg.rf.78f9fff06106aaa8789909f03d21f72d",
+    "train/IMG_20260209_125737508_BURST0006_jpg.rf.8511692a7ea452400164c84df17dbf9c",
+    "train/IMG_20260209_130444_jpg.rf.18195afc1dd1ac2794c8320334a5c4fc",
+    "train/IMG_20260212_142646_3_jpg.rf.1004b3d9a5a8b3031ccba20067563dfe",
+    "train/IMG_20260216_112810016_BURST0005_jpg.rf.754d2451c28d9945f9c45e6fc41fcba2",
+    "train/IMG_20260216_112810016_BURST0010_jpg.rf.47b54c4714a17e61158c4af8c152fd1a",
+    "train/IMG_20260216_112819025_BURST0019_jpg.rf.d685c7098b1a66a24f8b1f09145963ba",
+    "train/IMG_20260216_112847751_BURST0015_jpg.rf.255ff4a87359efe9d24b2b07d65375ad",
+    "train/IMG_20260216_112956238_BURST0016_jpg.rf.8634156580679b2d297c914ae6aad433",
+    "train/IMG_20260219_181914633_BURST0004_jpg.rf.ea72c1838f7d38285c2f79d3d7b297fd",
+    "train/IMG_20260219_182310786_BURST0003_jpg.rf.9d48d01b72caba01ba93525f7b62a44d",
+    "train/images-2-_jpeg_jpg.rf.4e8583c02241bc9b7936375333bd1175",
+    "train/images-2025-06-03T123212_096_jpeg_jpg.rf.cb8add9e92b144e1e10387dea00f640f",
+    "train/proxy-image-2025-06-09T160355_965_jpeg_jpg.rf.f41a6ba0240f2bdefad8f8b33f923d89",
+    "train/proxy-image-2025-06-09T161948_425_jpeg_jpg.rf.c5ea4d9371f1c64c41b7a99cb7938a88",
+    "train/proxy-image-2025-06-20T022730_724_jpeg_jpg.rf.7607435d1fbac1a0e4d028e656ce0649",
+    "train/proxy-image-2025-06-20T024404_089_jpeg_jpg.rf.95f8d9bd945a0da9a50b8ba10a0c673b",
+    "train/proxy-image-26-_jpeg_jpg.rf.986fef38b1747629f4aa92230d8e352a",
+    "train/proxy-image-29-_jpeg_jpg.rf.1675a3c70a743f50b10eaeb772cb4661",
+    "train/proxy-image-37-_jpeg_jpg.rf.6af6827b6b63ac9094baf72d9e330c4d",
+    "train/proxy-image-92-_jpeg_jpg.rf.b11605fbc74e073d97cfaac9c3fedc86",
+    "train/sunblotch-1-_jpg.rf.f9dc47715e9a79ce459c6ba743b6b26b",
+    "train/sunblotch-37-_jpg.rf.7edf1b18d6b96ea4b7a6a6ec521894cb",
+    "train/sunblotch-38-_jpg.rf.710e43d667aed883b1a9c577ed5ea75a",
+    "valid/Avocado-3539_jpg.rf.31280365fdfbe4ac357da5db7f23d2d7",
+    "valid/IMG_20260216_112831852_BURST0010_jpg.rf.b2e99d3ccce79dd36c655e42f9700fcc",
+    "valid/IMG_20260219_181751_237_jpg.rf.0f5d98c74be2d42e5cb040ed942a5c99",
+    "valid/IMG_20260219_181840414_BURST0007_jpg.rf.d4c316939c3bc09517d9d2a422e3664d",
+    "valid/IMG_20260219_181851797_BURST0008_jpg.rf.fe8be20cae02ecf06ff0aee0508af20e",
+    "valid/IMG_20260219_181914633_BURST0005_jpg.rf.5a1e9b0090e78f5ed8248daa2b59cd09",
+    "valid/IMG_20260219_182152_135_jpg.rf.56e5138fa7b4b97f8aff28de09cc77aa",
+    "valid/download-15-_jpeg_jpg.rf.91fa483d85f24225f90d8b1fa3fe9504",
+    "valid/images-2025-06-03T121436_002_jpeg_jpg.rf.3942fdf5301829dd240a2c967ad9f747",
+    "valid/img299_jpeg_jpg.rf.a398a38b96ac925ec8713cbed96df643",
+    "valid/proxy-image-2025-06-10T140245_773_jpeg_jpg.rf.fe2c011e65f3a4b529c8571ecfc3a98f",
+    "valid/proxy-image-45-Copy_jpeg_jpg.rf.440738f2053a0c3a4a3fd9381ca68741",
+    "valid/proxy-image-50-_jpeg_jpg.rf.b3c86618dbdbcffde436ecf4f1569d0d",
+    "valid/proxy-image-69-_jpeg_jpg.rf.9a0e009f04b39b7293875edf18079e99",
+    "valid/proxy-image-88-_jpeg_jpg.rf.e2432e087aa51cd4d3892d963a0a0fd9",
+    "valid/sunblotch-29-_jpg.rf.f0dfcb1833c22cd5355e3635f291390a",
+    "valid/sunblotch-31-_jpg.rf.1bf1cd6f5b3b2b45ff3ff73dc4fa33ef",
+    "valid/sunblotch-36-_jpg.rf.4c6596201f4d36a4fc6f19f94f78b363"
+  ],
+  "excluidas_fruto_sano": 334,
+  "excluidas_completas": 206,
+  "excluidas_solo_fruto_sano": 128,
+  "hojas": {
+    "imagenes": {
+      "train": 1657,
+      "valid": 486,
+      "test": 237
+    },
+    "grupos": 1338,
+    "clases": [
+      {
+        "clase": "hoja_sana",
+        "cajas_train": 485,
+        "cajas_valid": 138,
+        "cajas_test": 69,
+        "imagenes_train": 374,
+        "imagenes_valid": 108,
+        "imagenes_test": 56,
+        "porcentaje": "70/20/10"
+      },
+      {
+        "clase": "antracnosis_hoja",
+        "cajas_train": 484,
+        "cajas_valid": 140,
+        "cajas_test": 69,
+        "imagenes_train": 450,
+        "imagenes_valid": 129,
+        "imagenes_test": 65,
+        "porcentaje": "70/20/10"
+      },
+      {
+        "clase": "plaga",
+        "cajas_train": 489,
+        "cajas_valid": 142,
+        "cajas_test": 68,
+        "imagenes_train": 381,
+        "imagenes_valid": 109,
+        "imagenes_test": 46,
+        "porcentaje": "70/20/10"
+      },
+      {
+        "clase": "deficiencia_nutricional",
+        "cajas_train": 488,
+        "cajas_valid": 140,
+        "cajas_test": 70,
+        "imagenes_train": 488,
+        "imagenes_valid": 140,
+        "imagenes_test": 70,
+        "porcentaje": "70/20/10"
+      }
+    ]
+  },
+  "frutos": {
+    "imagenes": {
+      "train": 2545,
+      "valid": 790,
+      "test": 381
+    },
+    "grupos": 2731,
+    "clases": [
+      {
+        "clase": "fruto_sano",
+        "cajas_train": 726,
+        "cajas_valid": 206,
+        "cajas_test": 104,
+        "imagenes_train": 537,
+        "imagenes_valid": 128,
+        "imagenes_test": 61,
+        "porcentaje": "70/20/10"
+      },
+      {
+        "clase": "antracnosis_fruto",
+        "cajas_train": 1349,
+        "cajas_valid": 386,
+        "cajas_test": 192,
+        "imagenes_train": 791,
+        "imagenes_valid": 246,
+        "imagenes_test": 126,
+        "porcentaje": "70/20/10"
+      },
+      {
+        "clase": "cercospora",
+        "cajas_train": 782,
+        "cajas_valid": 224,
+        "cajas_test": 112,
+        "imagenes_train": 666,
+        "imagenes_valid": 207,
+        "imagenes_test": 100,
+        "porcentaje": "70/20/10"
+      },
+      {
+        "clase": "rona",
+        "cajas_train": 357,
+        "cajas_valid": 100,
+        "cajas_test": 53,
+        "imagenes_train": 277,
+        "imagenes_valid": 88,
+        "imagenes_test": 39,
+        "porcentaje": "70/20/10"
+      },
+      {
+        "clase": "pudricion_peduncular",
+        "cajas_train": 325,
+        "cajas_valid": 78,
+        "cajas_test": 34,
+        "imagenes_train": 313,
+        "imagenes_valid": 75,
+        "imagenes_test": 33,
+        "porcentaje": "74/18/8"
+      },
+      {
+        "clase": "sunblotch",
+        "cajas_train": 304,
+        "cajas_valid": 88,
+        "cajas_test": 40,
+        "imagenes_train": 123,
+        "imagenes_valid": 46,
+        "imagenes_test": 22,
+        "porcentaje": "70/20/9"
+      }
+    ]
+  }
+}
