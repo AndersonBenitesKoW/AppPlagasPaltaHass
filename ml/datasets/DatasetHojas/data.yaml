@@ -1,0 +1,12 @@
+# Generado por scripts/02_preparar_datasets.py. En Colab/otra PC cambia 'path' a la ubicacion real.
+path: D:/AppWebPlagasPaltaHass/DatasetHojas
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 4
+names:
+  0: hoja_sana
+  1: antracnosis_hoja
+  2: plaga
+  3: deficiencia_nutricional

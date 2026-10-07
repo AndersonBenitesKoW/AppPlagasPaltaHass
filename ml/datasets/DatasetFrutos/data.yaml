@@ -1,0 +1,14 @@
+# Generado por scripts/02_preparar_datasets.py. En Colab/otra PC cambia 'path' a la ubicacion real.
+path: D:/AppWebPlagasPaltaHass/DatasetFrutos
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 6
+names:
+  0: fruto_sano
+  1: antracnosis_fruto
+  2: cercospora
+  3: rona
+  4: pudricion_peduncular
+  5: sunblotch
