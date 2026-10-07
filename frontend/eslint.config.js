@@ -7,11 +7,15 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 import boundaries from 'eslint-plugin-boundaries';
 
 const elements = [
-  { type: 'app', pattern: 'src/app/**' },
-  { type: 'core', pattern: 'src/core/**', mode: 'folder', capture: ['folder'] },
-  { type: 'shared', pattern: 'src/shared/**', mode: 'folder', capture: ['folder'] },
+  {
+    type: 'app',
+    pattern: ['src/app/**', 'src/main.tsx', 'src/index.css', 'src/*.tsx'],
+    mode: 'full',
+  },
+  { type: 'core', pattern: 'src/core/**', mode: 'full' },
+  { type: 'shared', pattern: 'src/shared/**', mode: 'full' },
   { type: 'features', pattern: 'src/features/**', mode: 'folder', capture: ['feature'] },
-  { type: 'test', pattern: 'src/test/**' },
+  { type: 'test', pattern: 'src/test/**', mode: 'full' },
 ];
 
 export default tseslint.config(
@@ -69,6 +73,12 @@ export default tseslint.config(
     },
     settings: {
       react: { version: '19.0' },
+      'boundaries/ignore': ['**/*.css', '**/*.d.ts', '**/*.svg', '**/*.json'],
+      'import/resolver': {
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx', '.d.ts', '.css'],
+        },
+      },
       'boundaries/elements': elements,
     },
     plugins: {
@@ -96,7 +106,7 @@ export default tseslint.config(
         {
           default: 'disallow',
           rules: [
-            { from: 'app', allow: ['features', 'shared', 'core'] },
+            { from: 'app', allow: ['app', 'features', 'shared', 'core'] },
             {
               from: 'features',
               allow: ['shared', 'core', ['features', { feature: '${from.feature}' }]],
@@ -109,7 +119,7 @@ export default tseslint.config(
       'boundaries/entry-point': [
         'error',
         {
-          default: 'disallow',
+          default: 'allow',
           rules: [{ target: ['features'], allow: 'index.ts' }],
         },
       ],

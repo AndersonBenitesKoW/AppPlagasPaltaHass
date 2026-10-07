@@ -25,6 +25,7 @@ dependencies = [
   "httpx>=0.28",
   "slowapi>=0.1.9",
   "tenacity>=9.0",
+  "aiosqlite>=0.22.1",
 ]
 
 # torch y torchvision se instalan desde el índice CPU (ver [tool.uv.sources])
@@ -148,6 +149,7 @@ ignore = [
   "E501",   # line length (ruff format lo maneja)
   "B008",   # function call in default argument (Depends, Field son OK)
   "S101",   # assert (permitido en tests)
+  "N818",   # Error suffix on exception names (nombres en español tipo ErrorDominio)
 ]
 
 [tool.ruff.lint.per-file-ignores]
