@@ -1,7 +1,0 @@
-// Generado al arrancar el contenedor (frontend/nginx/40-runtime-config.sh).
-// En desarrollo local este archivo no existe; core/config/env.ts cae a import.meta.env.
-window.__APP_CONFIG__ = {
-  apiBaseUrl: '${API_BASE_URL}',
-  authUrl: '${AUTH_URL}',
-  env: '${APP_ENV}',
-};
