@@ -50,7 +50,11 @@ con `onnxruntime-web` (WebGPU si el dispositivo lo soporta, si no WASM).
   cd backend && uv run --with onnx --with onnxslim python ../ml/scripts/03_exportar_onnx.py
   ```
   Hay que volver a exportarlos cada vez que se promueve un `.pt` nuevo.
-- `features/diagnostico/realtime/detector-onnx.ts`: letterbox, inferencia, NMS.
+- `features/diagnostico/realtime/detector.worker.ts`: la inferencia corre en un
+  **Web Worker** para no bloquear el video (letterbox y NMS en `yolo.ts`).
+  `detector-onnx.ts` solo captura el cuadro (`ImageBitmap`) y se lo pasa.
+- COOP/COEP (`vite.config.ts` y `vercel.json`) habilitan WASM multihilo en
+  dispositivos sin WebGPU. Mantener ambos archivos en sincronía.
 - `features/diagnostico/realtime/estabilizador.ts`: seguimiento entre cuadros,
   suavizado de cajas y voto de clase para que el diagnóstico no parpadee.
 - **Guardar diagnóstico** envía el cuadro actual a `POST /api/v1/diagnosticos`:

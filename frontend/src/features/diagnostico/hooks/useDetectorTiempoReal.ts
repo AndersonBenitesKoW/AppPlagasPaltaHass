@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 
 import type { Organo } from '../api/diagnostico.api';
-import type { Deteccion } from '../model/types';
 import { DetectorOnnx, type BackendInferencia } from '../realtime/detector-onnx';
-import { Estabilizador, type EstadoEstabilidad } from '../realtime/estabilizador';
+import {
+  Estabilizador,
+  type DeteccionSeguida,
+  type EstadoEstabilidad,
+} from '../realtime/estabilizador';
 
 export interface EstadoDetectorTiempoReal {
   cargando: boolean;
   error: string | null;
   backend: BackendInferencia | null;
   fps: number;
-  detecciones: Deteccion[];
+  detecciones: DeteccionSeguida[];
   estado: EstadoEstabilidad;
 }
 

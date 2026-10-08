@@ -45,8 +45,10 @@ export const CamaraTiempoReal: React.FC<CamaraTiempoRealProps> = ({
         stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: camaraActiva,
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
+            // 720p: suficiente para el backend (analiza a 1024 px) y más liviano
+            // de decodificar y copiar en cada cuadro que 1080p.
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
           },
           audio: false,
         });
@@ -172,41 +174,53 @@ export const CamaraTiempoReal: React.FC<CamaraTiempoRealProps> = ({
                 viewBox={`0 0 ${vw} ${vh}`}
                 preserveAspectRatio="xMidYMid meet"
               >
-                {detecciones.map((det, idx) => {
+                {detecciones.map((det) => {
                   const paleta = paletaDeClase(det.clase);
-                  const x = det.caja.x1 * vw;
-                  const y = det.caja.y1 * vh;
                   const etiqueta = `${formatClase(det.clase)} ${(det.confianza * 100).toFixed(0)}%`;
+                  const altoEtiqueta = tamFuente * 1.5;
+                  // Transición CSS: la caja se desliza entre detecciones en vez de saltar.
+                  const transicion = 'transform 150ms linear, width 150ms linear, height 150ms linear';
                   return (
-                    <g key={idx}>
+                    <g
+                      key={det.id}
+                      style={{
+                        transform: `translate(${det.caja.x1 * vw}px, ${det.caja.y1 * vh}px)`,
+                        transition: transicion,
+                      }}
+                    >
                       <rect
-                        x={x}
-                        y={y}
-                        width={(det.caja.x2 - det.caja.x1) * vw}
-                        height={(det.caja.y2 - det.caja.y1) * vh}
+                        style={{
+                          width: (det.caja.x2 - det.caja.x1) * vw,
+                          height: (det.caja.y2 - det.caja.y1) * vh,
+                          transition: transicion,
+                        }}
                         fill={paleta.bg}
                         stroke={paleta.stroke}
                         strokeWidth={tamFuente * 0.18}
                         rx={tamFuente * 0.3}
                       />
-                      <rect
-                        x={x}
-                        y={Math.max(0, y - tamFuente * 1.5)}
-                        width={etiqueta.length * tamFuente * 0.6 + tamFuente}
-                        height={tamFuente * 1.5}
-                        fill={paleta.stroke}
-                        rx={tamFuente * 0.25}
-                      />
-                      <text
-                        x={x + tamFuente * 0.5}
-                        y={Math.max(0, y - tamFuente * 1.5) + tamFuente * 1.1}
-                        fill="#ffffff"
-                        fontSize={tamFuente}
-                        fontWeight="bold"
-                        fontFamily="sans-serif"
+                      <g
+                        transform={
+                          det.caja.y1 * vh < altoEtiqueta ? undefined : `translate(0, ${-altoEtiqueta})`
+                        }
                       >
-                        {etiqueta}
-                      </text>
+                        <rect
+                          width={etiqueta.length * tamFuente * 0.6 + tamFuente}
+                          height={altoEtiqueta}
+                          fill={paleta.stroke}
+                          rx={tamFuente * 0.25}
+                        />
+                        <text
+                          x={tamFuente * 0.5}
+                          y={tamFuente * 1.1}
+                          fill="#ffffff"
+                          fontSize={tamFuente}
+                          fontWeight="bold"
+                          fontFamily="sans-serif"
+                        >
+                          {etiqueta}
+                        </text>
+                      </g>
                     </g>
                   );
                 })}

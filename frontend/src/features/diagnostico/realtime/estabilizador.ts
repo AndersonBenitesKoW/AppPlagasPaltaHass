@@ -1,15 +1,16 @@
 import type { Deteccion } from '../model/types';
-import { iou } from './detector-onnx';
+import { iou } from './yolo';
 
 /** Parámetros de estabilidad. Más cuadros = más estable pero más lento en reaccionar. */
 const IOU_ASOCIACION = 0.3; // solape mínimo para considerar que es el mismo objeto
-const SUAVIZADO_CAJA = 0.4; // peso del cuadro nuevo en la posición de la caja
+const SUAVIZADO_CAJA = 0.5; // peso del cuadro nuevo en la posición de la caja
 const DECAIMIENTO_VOTOS = 0.85; // cuánto "olvida" la clase en cada cuadro
 const MIN_ACIERTOS_VISIBLE = 3; // cuadros seguidos para mostrar un objeto
 const MIN_ACIERTOS_ESTABLE = 8; // cuadros seguidos para declarar el diagnóstico estable
 const MAX_FALLOS = 4; // cuadros sin verlo antes de olvidarlo (evita parpadeo)
 
 interface Pista {
+  id: number;
   caja: Deteccion['caja'];
   votos: Map<string, number>;
   confianza: number;
@@ -20,8 +21,13 @@ interface Pista {
 
 export type EstadoEstabilidad = 'buscando' | 'estabilizando' | 'estable';
 
+/** Detección estabilizada con un id que se mantiene mientras se sigue al objeto. */
+export interface DeteccionSeguida extends Deteccion {
+  id: number;
+}
+
 export interface ResultadoEstable {
-  detecciones: Deteccion[];
+  detecciones: DeteccionSeguida[];
   estado: EstadoEstabilidad;
 }
 
@@ -50,6 +56,7 @@ function mezclar(a: number, b: number, t: number): number {
  */
 export class Estabilizador {
   private pistas: Pista[] = [];
+  private siguienteId = 0;
 
   reiniciar(): void {
     this.pistas = [];
@@ -95,6 +102,7 @@ export class Estabilizador {
     detecciones.forEach((d, j) => {
       if (asignadas.has(j)) return;
       this.pistas.push({
+        id: this.siguienteId++,
         caja: { ...d.caja },
         votos: new Map([[d.clase, d.confianza]]),
         confianza: d.confianza,
@@ -106,7 +114,7 @@ export class Estabilizador {
 
     const visibles = this.pistas.filter((p) => p.aciertos >= MIN_ACIERTOS_VISIBLE);
     let estable = visibles.length > 0;
-    const salida: Deteccion[] = visibles.map((p) => {
+    const salida: DeteccionSeguida[] = visibles.map((p) => {
       const clase = claseGanadora(p.votos);
       if (clase !== p.claseAnterior) {
         // Cambió la clase ganadora: se exige volver a acumular confirmaciones.
@@ -114,7 +122,7 @@ export class Estabilizador {
         p.aciertos = MIN_ACIERTOS_VISIBLE;
       }
       if (p.aciertos < MIN_ACIERTOS_ESTABLE) estable = false;
-      return { clase, confianza: p.confianza, caja: { ...p.caja } };
+      return { id: p.id, clase, confianza: p.confianza, caja: { ...p.caja } };
     });
 
     return {
