@@ -21,6 +21,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
         "http://localhost:8080",
     ]
+    # Regex de orígenes extra (p. ej. dominios de Vercel, incluidas las previews).
+    cors_origin_regex: str | None = None
 
     modelos_dir: Path = Path("models")
     modelo_hojas: str = "hojas.pt"

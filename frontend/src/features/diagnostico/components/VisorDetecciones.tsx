@@ -2,33 +2,12 @@ import React, { useState } from 'react';
 import type { Deteccion } from '../model/types';
 import { Eye, EyeOff } from 'lucide-react';
 import { getApiUrl } from '../../../core/config/api-url';
+import { colorPorClase, formatClase } from '../model/clases';
 
 interface VisorDeteccionesProps {
   imagenUrl: string;
   detecciones: Deteccion[];
   className?: string;
-}
-
-const colorPorClase: Record<string, { stroke: string; bg: string; text: string }> = {
-  hoja_sana: { stroke: '#10b981', bg: 'rgba(16, 185, 129, 0.25)', text: '#34d399' },
-  antracnosis_hoja: { stroke: '#f43f5e', bg: 'rgba(244, 63, 94, 0.25)', text: '#fb7185' },
-  plaga: { stroke: '#f59e0b', bg: 'rgba(245, 158, 11, 0.25)', text: '#fbbf24' },
-  deficiencia_nutricional: { stroke: '#a855f7', bg: 'rgba(168, 85, 247, 0.25)', text: '#c084fc' },
-};
-
-function formatClase(clase: string): string {
-  switch (clase) {
-    case 'hoja_sana':
-      return 'Hoja Sana';
-    case 'antracnosis_hoja':
-      return 'Antracnosis';
-    case 'plaga':
-      return 'Plaga (Trips/Ácaros)';
-    case 'deficiencia_nutricional':
-      return 'Deficiencia Nutricional';
-    default:
-      return clase.replace(/_/g, ' ');
-  }
 }
 
 export const VisorDetecciones: React.FC<VisorDeteccionesProps> = ({

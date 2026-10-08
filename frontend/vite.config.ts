@@ -9,6 +9,10 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // onnxruntime-web carga sus .wasm con import.meta.url: no debe pre-empaquetarse.
+  optimizeDeps: {
+    exclude: ['onnxruntime-web'],
+  },
   server: {
     port: 5173,
     proxy: {

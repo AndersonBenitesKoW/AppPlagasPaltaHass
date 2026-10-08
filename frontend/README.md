@@ -39,6 +39,23 @@ hacia `http://localhost:8000` (backend en local).
 | `npm run check:api` | Falla si el contrato cambió                              |
 | `npm run e2e`       | Playwright contra el dev server                          |
 
+## Diagnóstico en tiempo real
+
+La cámara detecta en vivo, sin tomar foto: el modelo YOLO corre **en el navegador**
+con `onnxruntime-web` (WebGPU si el dispositivo lo soporta, si no WASM).
+
+- Modelos: `public/modelos/{hojas,frutos}.onnx` + `modelos.json` (clases, imgsz).
+  Se regeneran desde `backend/models/*.pt` con:
+  ```bash
+  cd backend && uv run --with onnx --with onnxslim python ../ml/scripts/03_exportar_onnx.py
+  ```
+  Hay que volver a exportarlos cada vez que se promueve un `.pt` nuevo.
+- `features/diagnostico/realtime/detector-onnx.ts`: letterbox, inferencia, NMS.
+- `features/diagnostico/realtime/estabilizador.ts`: seguimiento entre cuadros,
+  suavizado de cajas y voto de clase para que el diagnóstico no parpadee.
+- **Guardar diagnóstico** envía el cuadro actual a `POST /api/v1/diagnosticos`:
+  el backend lo vuelve a analizar a 1024 px y lo guarda en la BD.
+
 ## Estructura
 
 ```

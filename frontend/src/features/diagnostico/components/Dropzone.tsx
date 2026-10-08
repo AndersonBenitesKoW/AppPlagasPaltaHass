@@ -1,37 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  UploadCloud,
-  Image as ImageIcon,
-  X,
-  Sparkles,
-  Camera,
-  RotateCcw,
-} from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, X, Sparkles, ScanSearch } from 'lucide-react';
 import { Button } from '../../../shared/ui/Button';
 
 interface DropzoneProps {
   onAnalizar: (archivos: File[]) => void;
+  onAbrirCamara: () => void;
   isLoading: boolean;
 }
 
 export const Dropzone: React.FC<DropzoneProps> = ({
   onAnalizar,
+  onAbrirCamara,
   isLoading,
 }) => {
   const [archivos, setArchivos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
 
-  // Cámara
-  const [mostrarCamara, setMostrarCamara] = useState(false);
-  const [camaraActiva, setCamaraActiva] = useState<'environment' | 'user'>(
-    'environment',
-  );
-  const [errorCamara, setErrorCamara] = useState<string | null>(null);
-
   const inputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
 
   /*
    * ============================================================
@@ -91,166 +77,8 @@ export const Dropzone: React.FC<DropzoneProps> = ({
     }
   };
 
-  /*
-   * ============================================================
-   * CÁMARA
-   * ============================================================
-   */
-
-  const detenerCamara = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => {
-        track.stop();
-      });
-
-      streamRef.current = null;
-    }
-
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-  };
-
-  const abrirCamara = async () => {
-    setErrorCamara(null);
-    setMostrarCamara(true);
-  };
-
-  const iniciarCamara = async () => {
-    try {
-      setErrorCamara(null);
-
-      detenerCamara();
-
-      if (!navigator.mediaDevices?.getUserMedia) {
-        setErrorCamara(
-          'Tu navegador no permite acceder a la cámara desde esta página.',
-        );
-        return;
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: camaraActiva,
-          width: {
-            ideal: 1920,
-          },
-          height: {
-            ideal: 1080,
-          },
-        },
-        audio: false,
-      });
-
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-
-        try {
-          await videoRef.current.play();
-        } catch {
-          // Algunos navegadores manejan el play automáticamente.
-        }
-      }
-    } catch (error) {
-      console.error('Error al acceder a la cámara:', error);
-
-      setErrorCamara(
-        'No se pudo acceder a la cámara. Verifica que hayas permitido el acceso a la cámara.',
-      );
-    }
-  };
-
-  const cerrarCamara = () => {
-    detenerCamara();
-    setMostrarCamara(false);
-    setErrorCamara(null);
-  };
-
-  const cambiarCamara = async () => {
-    const nuevaCamara =
-      camaraActiva === 'environment' ? 'user' : 'environment';
-
-    setCamaraActiva(nuevaCamara);
-  };
-
-  const capturarFoto = () => {
-    const video = videoRef.current;
-
-    if (!video) return;
-
-    if (video.readyState < 2) {
-      setErrorCamara('La cámara todavía no está lista.');
-      return;
-    }
-
-    const canvas = document.createElement('canvas');
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const context = canvas.getContext('2d');
-
-    if (!context) {
-      setErrorCamara('No se pudo capturar la imagen.');
-      return;
-    }
-
-    context.drawImage(
-      video,
-      0,
-      0,
-      canvas.width,
-      canvas.height,
-    );
-
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) {
-          setErrorCamara('No se pudo generar la fotografía.');
-          return;
-        }
-
-        const nombreArchivo = `foto-camara-${Date.now()}.jpg`;
-
-        const archivo = new File(
-          [blob],
-          nombreArchivo,
-          {
-            type: 'image/jpeg',
-          },
-        );
-
-        agregarArchivos([archivo]);
-
-        cerrarCamara();
-      },
-      'image/jpeg',
-      0.92,
-    );
-  };
-
-  /*
-   * ============================================================
-   * EFECTOS DE CÁMARA
-   * ============================================================
-   */
-
-  useEffect(() => {
-    if (mostrarCamara) {
-      iniciarCamara();
-    }
-
-    return () => {
-      detenerCamara();
-    };
-  }, [mostrarCamara, camaraActiva]);
-
   useEffect(() => {
     return () => {
-      detenerCamara();
-
       previews.forEach((preview) => {
         URL.revokeObjectURL(preview);
       });
@@ -339,7 +167,7 @@ export const Dropzone: React.FC<DropzoneProps> = ({
       </div>
 
       {/* ======================================================
-          BOTÓN DE CÁMARA
+          BOTÓN DE DIAGNÓSTICO EN TIEMPO REAL
           ====================================================== */}
 
       <div className="flex justify-center">
@@ -347,12 +175,12 @@ export const Dropzone: React.FC<DropzoneProps> = ({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            abrirCamara();
+            onAbrirCamara();
           }}
           className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-semibold transition-colors cursor-pointer"
         >
-          <Camera className="w-5 h-5" />
-          Tomar foto
+          <ScanSearch className="w-5 h-5" />
+          Diagnóstico en tiempo real
         </button>
       </div>
 
@@ -443,112 +271,6 @@ export const Dropzone: React.FC<DropzoneProps> = ({
                 </>
               )}
             </Button>
-
-          </div>
-
-        </div>
-      )}
-
-      {/* ======================================================
-          MODAL DE CÁMARA
-          ====================================================== */}
-
-      {mostrarCamara && (
-        <div
-          className="fixed inset-0 z-[100] bg-black flex flex-col"
-          onClick={(e) => e.stopPropagation()}
-        >
-
-          {/* Cabecera */}
-          <div className="flex items-center justify-between px-4 py-4 bg-black/80 text-white">
-
-            <h2 className="text-lg font-semibold">
-              Tomar foto
-            </h2>
-
-            <button
-              type="button"
-              onClick={cerrarCamara}
-              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-          </div>
-
-          {/* Vista de cámara */}
-          <div className="relative flex-1 flex items-center justify-center bg-black overflow-hidden">
-
-            {errorCamara ? (
-              <div className="px-6 text-center">
-
-                <Camera className="w-16 h-16 text-red-400 mx-auto mb-4" />
-
-                <p className="text-white text-lg font-semibold mb-2">
-                  No se pudo abrir la cámara
-                </p>
-
-                <p className="text-slate-400 text-sm max-w-sm">
-                  {errorCamara}
-                </p>
-
-              </div>
-            ) : (
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-                className="w-full h-full object-contain"
-              />
-            )}
-
-            {/* Guía para colocar la planta/palta */}
-            {!errorCamara && (
-              <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-
-                <div className="w-[75%] h-[60%] border-2 border-emerald-400/70 rounded-3xl shadow-[0_0_30px_rgba(52,211,153,0.15)]" />
-
-              </div>
-            )}
-
-          </div>
-
-          {/* Controles */}
-          <div className="bg-black/90 px-6 py-6">
-
-            <div className="flex items-center justify-center gap-8">
-
-              {/* Cambiar cámara */}
-              <button
-                type="button"
-                onClick={cambiarCamara}
-                disabled={!!errorCamara}
-                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-40 text-white flex items-center justify-center transition-colors"
-                title="Cambiar cámara"
-              >
-                <RotateCcw className="w-6 h-6" />
-              </button>
-
-              {/* Capturar */}
-              <button
-                type="button"
-                onClick={capturarFoto}
-                disabled={!!errorCamara}
-                className="w-20 h-20 rounded-full bg-white border-4 border-emerald-400 hover:scale-105 active:scale-95 disabled:opacity-40 transition-transform flex items-center justify-center"
-                title="Capturar foto"
-              >
-                <div className="w-14 h-14 rounded-full bg-emerald-500" />
-              </button>
-
-              {/* Espacio para mantener centrado */}
-              <div className="w-12 h-12" />
-
-            </div>
-
-            <p className="text-center text-slate-400 text-xs mt-4">
-              Coloca la hoja o fruto dentro del recuadro y toma la foto
-            </p>
 
           </div>
 

@@ -3,6 +3,7 @@ import { getApiUrl } from '../core/config/api-url';
 import { Navbar, type TabId } from './Navbar';
 import {
   Dropzone,
+  CamaraTiempoReal,
   DiagnosticoDetalle,
   useDiagnosticar,
   type Diagnostico,
@@ -21,6 +22,9 @@ export const App: React.FC = () => {
   const { data: historial } = useHistorial();
 
   const [organoSeleccionado, setOrganoSeleccionado] = useState<Organo>('hoja');
+  const [camaraAbierta, setCamaraAbierta] = useState(false);
+  const [guardandoCamara, setGuardandoCamara] = useState(false);
+  const [errorCamara, setErrorCamara] = useState<string | null>(null);
 
   // Estado del resultado actual en vivo
   const [diagnosticosLote, setDiagnosticosLote] = useState<Diagnostico[]>([]);
@@ -49,6 +53,22 @@ export const App: React.FC = () => {
       }
     } catch {
       // Error manejado en el hook
+    }
+  };
+
+  const handleGuardarTiempoReal = async (archivo: File) => {
+    setGuardandoCamara(true);
+    setErrorCamara(null);
+    try {
+      // El backend vuelve a analizar el cuadro a resolución completa y lo guarda en la BD.
+      const resultado = await analizarUno({ file: archivo, organo: organoSeleccionado });
+      setDiagnosticosLote([resultado]);
+      setIndiceLoteActivo(0);
+      setCamaraAbierta(false);
+    } catch (e) {
+      setErrorCamara(e instanceof Error ? e.message : 'No se pudo guardar el diagnóstico.');
+    } finally {
+      setGuardandoCamara(false);
     }
   };
 
@@ -83,8 +103,8 @@ export const App: React.FC = () => {
               </h1>
 
               <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                Sube una o varias fotografías de hojas o frutos de palto para clasificar y
-                delimitar automáticamente las enfermedades mediante redes neuronales.
+                Apunta la cámara a una hoja o fruto de palto para detectar enfermedades en
+                tiempo real, o sube una o varias fotografías para analizarlas.
               </p>
             </div>
 
@@ -182,7 +202,14 @@ export const App: React.FC = () => {
             {/* Dropzone / resultados */}
             {diagnosticosLote.length === 0 ? (
               <div className="max-w-3xl mx-auto">
-                <Dropzone onAnalizar={handleAnalizar} isLoading={isLoading} />
+                <Dropzone
+                  onAnalizar={handleAnalizar}
+                  onAbrirCamara={() => {
+                    setErrorCamara(null);
+                    setCamaraAbierta(true);
+                  }}
+                  isLoading={isLoading}
+                />
               </div>
             ) : (
               <div className="space-y-8 animate-fade-in">
@@ -268,6 +295,17 @@ export const App: React.FC = () => {
 
         {/* Catálogo */}
         {tabActiva === 'catalogo' && <CatalogoGrid />}
+
+        {/* Cámara en tiempo real */}
+        {camaraAbierta && (
+          <CamaraTiempoReal
+            organo={organoSeleccionado}
+            guardando={guardandoCamara}
+            errorGuardado={errorCamara}
+            onGuardar={(archivo) => void handleGuardarTiempoReal(archivo)}
+            onCerrar={() => setCamaraAbierta(false)}
+          />
+        )}
 
         {/* Modal historial */}
         <Modal
