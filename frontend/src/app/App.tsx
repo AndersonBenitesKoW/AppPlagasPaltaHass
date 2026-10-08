@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getApiUrl } from '../core/config/api-url';
 import { Navbar, type TabId } from './Navbar';
 import {
   Dropzone,
@@ -223,7 +224,7 @@ export const App: React.FC = () => {
                           }`}
                         >
                           <img
-                            src={diag.imagen_url}
+                            src={getApiUrl(diag.imagen_url)}
                             alt={`Muestra ${idx + 1}`}
                             className="w-full h-full object-cover"
                           />

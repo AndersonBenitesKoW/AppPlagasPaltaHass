@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Deteccion } from '../model/types';
 import { Eye, EyeOff } from 'lucide-react';
+import { getApiUrl } from '../../../core/config/api-url';
 
 interface VisorDeteccionesProps {
   imagenUrl: string;
@@ -60,7 +61,11 @@ export const VisorDetecciones: React.FC<VisorDeteccionesProps> = ({
 
       {/* Contenedor relativo de imagen y overlay SVG */}
       <div className="relative w-full aspect-square max-h-[500px] flex items-center justify-center overflow-hidden">
-        <img src={imagenUrl} alt="Hoja analizada" className="w-full h-full object-contain" />
+        <img
+  src={getApiUrl(imagenUrl)}
+  alt="Hoja analizada"
+  className="w-full h-full object-contain"
+/>
 
         {mostrarCajas && (
           <svg
