@@ -10,4 +10,6 @@ htmlcov/
 
 # Pesos (versionamos solo manifest.json)
 models/*.pt
+!models/hojas.pt
+!models/frutos.pt
 !models/manifest.json
