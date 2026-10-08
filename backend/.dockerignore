@@ -1,0 +1,11 @@
+# El .env local es de desarrollo: en Railway mandan las variables del servicio.
+.env
+.venv/
+**/__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.import_linter_cache/
+.coverage
+htmlcov/
+tests/
