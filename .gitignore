@@ -16,7 +16,6 @@ env/
 .uv-cache/
 
 # --- Entornos virtuales por versión ------------------
-.python-version
 # (pyenv-win usa .python-version; en Linux/macOS lo lee pyenv también)
 
 # --- Type checkers / linters --------------------------
