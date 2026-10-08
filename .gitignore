@@ -59,6 +59,7 @@ Thumbs.db
 # --- Modelos y datasets -----------------------------
 # Pesos: NO se versionan; se montan por volumen o se descargan en CI
 *.onnx
+!frontend/public/modelos/*.onnx
 *.engine
 *.tflite
 *.pb
