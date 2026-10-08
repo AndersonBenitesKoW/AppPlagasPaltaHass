@@ -27,6 +27,17 @@ ml/
 4. El notebook apunta a `datasets/DatasetHojas/data.yaml` y
    `datasets/DatasetFrutos/data.yaml`.
 
+## Reentrenamiento robusto a distancia y enfoque
+
+`notebooks/reentrenamiento_robusto_yolo11.ipynb` entrena dos variantes por órgano
+con aumentación de cámara de campo (escala, desenfoque, ruido, compresión, luz):
+
+- `preciso` (YOLO11s@1024) → `backend/models/*.pt`
+- `tiempo_real` (YOLO11n@640) → `frontend/public/modelos/*.onnx`
+
+Incluye un benchmark que compara el modelo actual y el nuevo con objetos más
+lejanos y desenfocados, y exporta todo listo para copiar al repo.
+
 ## Promover un modelo a producción
 
 Antes de mover `best.pt` a `backend/models/`, **siempre**:
