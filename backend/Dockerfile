@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir uv \
 
 COPY . .
 
-CMD ["sh", "-c", "uv run uvicorn plagas.main:create_app --factory --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD sh -c 'uv run uvicorn plagas.main:create_app --factory --host 0.0.0.0 --port ${PORT:-8000}'
