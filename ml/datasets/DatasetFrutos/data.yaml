@@ -1,5 +1,4 @@
-# Generado por scripts/02_preparar_datasets.py. En Colab/otra PC cambia 'path' a la ubicacion real.
-path: D:/AppWebPlagasPaltaHass/DatasetFrutos
+path: C:/Users/fabri/Desktop/Tesis/AppPlagasPaltaHass/ml/datasets/DatasetFrutos
 train: train/images
 val: valid/images
 test: test/images

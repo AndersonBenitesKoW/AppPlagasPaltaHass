@@ -1,0 +1,24 @@
+{
+  "hoja": {
+    "archivo": "hojas.onnx",
+    "imgsz": 640,
+    "clases": [
+      "hoja_sana",
+      "antracnosis_hoja",
+      "plaga",
+      "deficiencia_nutricional"
+    ]
+  },
+  "fruto": {
+    "archivo": "frutos.onnx",
+    "imgsz": 640,
+    "clases": [
+      "fruto_sano",
+      "antracnosis_fruto",
+      "cercospora",
+      "rona",
+      "pudricion_peduncular",
+      "sunblotch"
+    ]
+  }
+}

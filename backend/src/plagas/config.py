@@ -15,11 +15,14 @@ class Settings(BaseSettings):
     env: Literal["dev", "staging", "prod"] = "dev"
     log_level: str = "INFO"
     database_url: str = "sqlite+aiosqlite:///./plagas.db"
+
     cors_origins: list[str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:8080",
     ]
+    # Regex de orígenes extra: frontend en Vercel (producción y previews).
+    cors_origin_regex: str | None = r"https://plagasvocados1(-[a-z0-9-]+)?\.vercel\.app"
 
     modelos_dir: Path = Path("models")
     modelo_hojas: str = "hojas.pt"
@@ -35,7 +38,14 @@ class Settings(BaseSettings):
     oidc_emisor: str = "http://localhost:8081/realms/plagas"
     oidc_audiencia: str = "api-plagas"
     oidc_jwks_url: str = "http://localhost:8081/realms/plagas/protocol/openid-connect/certs"
-    hosts_permitidos: list[str] = ["localhost", "127.0.0.1", "backend", "*"]
+
+    hosts_permitidos: list[str] = [
+        "localhost",
+        "127.0.0.1",
+        "backend",
+        "appplagaspaltahass-2.up.railway.app",
+    ]
+
     max_cuerpo_bytes: int = 11 * 1024 * 1024
     rate_limit_storage: str = "memory://"
 

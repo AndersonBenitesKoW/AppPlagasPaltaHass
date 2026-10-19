@@ -1,17 +1,29 @@
-import React, { useRef, useState } from 'react';
-import { UploadCloud, Image as ImageIcon, X, Sparkles, FolderUp } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { UploadCloud, Image as ImageIcon, X, Sparkles, ScanSearch } from 'lucide-react';
 import { Button } from '../../../shared/ui/Button';
 
 interface DropzoneProps {
   onAnalizar: (archivos: File[]) => void;
+  onAbrirCamara: () => void;
   isLoading: boolean;
 }
 
-export const Dropzone: React.FC<DropzoneProps> = ({ onAnalizar, isLoading }) => {
+export const Dropzone: React.FC<DropzoneProps> = ({
+  onAnalizar,
+  onAbrirCamara,
+  isLoading,
+}) => {
   const [archivos, setArchivos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
+
+  /*
+   * ============================================================
+   * ARCHIVOS
+   * ============================================================
+   */
 
   const agregarArchivos = (nuevos: FileList | File[]) => {
     const permitidos = Array.from(nuevos).filter((f) =>
@@ -20,33 +32,64 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onAnalizar, isLoading }) => 
 
     if (permitidos.length === 0) return;
 
-    const actualizados = [...archivos, ...permitidos];
-    setArchivos(actualizados);
+    setArchivos((prev) => [...prev, ...permitidos]);
 
-    // Generar previews
-    const nuevosPreviews = permitidos.map((f) => URL.createObjectURL(f));
+    const nuevosPreviews = permitidos.map((f) =>
+      URL.createObjectURL(f),
+    );
+
     setPreviews((prev) => [...prev, ...nuevosPreviews]);
   };
 
   const eliminarArchivo = (index: number) => {
-    URL.revokeObjectURL(previews[index]);
+    setPreviews((prev) => {
+      if (prev[index]) {
+        URL.revokeObjectURL(prev[index]);
+      }
+
+      return prev.filter((_, i) => i !== index);
+    });
+
     setArchivos((prev) => prev.filter((_, i) => i !== index));
-    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const limpiarTodo = () => {
-    previews.forEach((p) => URL.revokeObjectURL(p));
+    previews.forEach((preview) => {
+      URL.revokeObjectURL(preview);
+    });
+
     setArchivos([]);
     setPreviews([]);
   };
 
+  /*
+   * ============================================================
+   * DRAG & DROP
+   * ============================================================
+   */
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragOver(false);
+
     if (e.dataTransfer.files) {
       agregarArchivos(e.dataTransfer.files);
     }
   };
+
+  useEffect(() => {
+    return () => {
+      previews.forEach((preview) => {
+        URL.revokeObjectURL(preview);
+      });
+    };
+  }, []);
+
+  /*
+   * ============================================================
+   * ANALIZAR
+   * ============================================================
+   */
 
   const handleAnalizarClick = () => {
     if (archivos.length > 0) {
@@ -54,9 +97,19 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onAnalizar, isLoading }) => 
     }
   };
 
+  /*
+   * ============================================================
+   * RENDER
+   * ============================================================
+   */
+
   return (
     <div className="space-y-4">
-      {/* Zona de arrastrar y soltar */}
+
+      {/* ======================================================
+          ÁREA PRINCIPAL DE SUBIDA
+          ====================================================== */}
+
       <div
         onDragOver={(e) => {
           e.preventDefault();
@@ -71,100 +124,159 @@ export const Dropzone: React.FC<DropzoneProps> = ({ onAnalizar, isLoading }) => 
             : 'border-emerald-500/25 bg-[#121915]/60 hover:border-emerald-500/50 hover:bg-[#121915]'
         }`}
       >
+
+        {/* Input normal de archivos */}
         <input
           ref={inputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
           multiple
           className="hidden"
-          onChange={(e) => e.target.files && agregarArchivos(e.target.files)}
+          onChange={(e) => {
+            if (e.target.files) {
+              agregarArchivos(e.target.files);
+            }
+
+            e.target.value = '';
+          }}
         />
 
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <div className="relative">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-inner group-hover:scale-110 transition-transform">
-              <UploadCloud className="w-8 h-8 animate-bounce-subtle" />
-            </div>
-            <Sparkles className="w-5 h-5 text-emerald-300 absolute -top-1 -right-1 animate-pulse" />
+        <div className="flex flex-col items-center">
+
+          {/* Icono */}
+          <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-5">
+            <UploadCloud className="w-8 h-8 text-emerald-400" />
           </div>
 
-          <div className="space-y-1">
-            <p className="text-lg font-semibold text-slate-100">
-              Arrastra una o varias fotos de hojas de palta Hass
-            </p>
-            <p className="text-sm text-slate-400">
-              o haz clic para explorar en tu dispositivo (JPEG, PNG o WEBP hasta 10 MB)
-            </p>
-          </div>
+          {/* Título */}
+          <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">
+            Arrastra tus imágenes aquí
+          </h3>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-400">
-            <FolderUp className="w-3.5 h-3.5" />
-            Soporta análisis individual o en lote
-          </div>
+          {/* Descripción */}
+          <p className="text-sm text-slate-400 mb-2">
+            o haz clic para seleccionar imágenes
+          </p>
+
+          {/* Formatos */}
+          <p className="text-xs text-slate-500">
+            JPG, PNG o WEBP
+          </p>
+
         </div>
       </div>
 
-      {/* Miniaturas de imágenes seleccionadas */}
+      {/* ======================================================
+          BOTÓN DE DIAGNÓSTICO EN TIEMPO REAL
+          ====================================================== */}
+
+      <div className="flex justify-center">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAbrirCamara();
+          }}
+          className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-semibold transition-colors cursor-pointer"
+        >
+          <ScanSearch className="w-5 h-5" />
+          Diagnóstico en tiempo real
+        </button>
+      </div>
+
+      {/* ======================================================
+          PREVISUALIZACIONES
+          ====================================================== */}
+
       {archivos.length > 0 && (
-        <div className="p-4 rounded-2xl bg-[#111915] border border-dark-border space-y-4 animate-fade-in">
+        <div className="space-y-4">
+
+          {/* Cabecera */}
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-              <ImageIcon className="w-4 h-4 text-emerald-400" />
-              {archivos.length} {archivos.length === 1 ? 'imagen lista' : 'imágenes listas'} para
-              diagnóstico
-            </span>
+
+            <div className="flex items-center gap-2">
+              <ImageIcon className="w-5 h-5 text-emerald-400" />
+
+              <span className="text-sm font-medium text-white">
+                {archivos.length}{' '}
+                {archivos.length === 1
+                  ? 'imagen seleccionada'
+                  : 'imágenes seleccionadas'}
+              </span>
+            </div>
+
             <button
+              type="button"
               onClick={limpiarTodo}
-              className="text-xs text-rose-400 hover:text-rose-300 hover:underline cursor-pointer"
+              className="text-xs text-slate-400 hover:text-red-400 transition-colors"
             >
-              Quitar todas
+              Limpiar todo
             </button>
+
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+          {/* Imágenes */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+
             {previews.map((preview, index) => (
               <div
-                key={index}
-                className="relative group rounded-xl overflow-hidden aspect-square border border-dark-border bg-black/40"
+                key={preview}
+                className="relative aspect-square rounded-2xl overflow-hidden border border-emerald-500/20 bg-[#121915]"
               >
+
                 <img
                   src={preview}
-                  alt={`Previsualización ${index + 1}`}
+                  alt={`Vista previa ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
+
+                {/* Eliminar */}
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    eliminarArchivo(index);
-                  }}
-                  className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/75 hover:bg-rose-600 text-white transition-colors cursor-pointer"
-                  title="Eliminar foto"
+                  onClick={() => eliminarArchivo(index)}
+                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 hover:bg-red-500 text-white flex items-center justify-center transition-colors"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-4 h-4" />
                 </button>
-                <div className="absolute bottom-0 inset-x-0 p-1 bg-black/70 text-[10px] text-slate-300 truncate text-center">
-                  {archivos[index]?.name}
+
+                {/* Nombre */}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1">
+                  <p className="text-xs text-white truncate">
+                    {archivos[index].name}
+                  </p>
                 </div>
+
               </div>
             ))}
+
           </div>
 
-          <div className="pt-2 flex justify-end">
+          {/* Analizar */}
+          <div className="flex justify-center pt-2">
+
             <Button
               onClick={handleAnalizarClick}
-              isLoading={isLoading}
-              size="lg"
-              className="w-full sm:w-auto shadow-xl"
+              disabled={isLoading || archivos.length === 0}
+              className="min-w-[200px]"
             >
-              <Sparkles className="w-5 h-5 mr-1" />
-              {archivos.length === 1
-                ? 'Analizar Hoja con IA'
-                : `Analizar ${archivos.length} Hojas en Lote`}
+              {isLoading ? (
+                <>
+                  <Sparkles className="w-5 h-5 mr-2 animate-pulse" />
+                  Analizando...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Analizar imágenes
+                </>
+              )}
             </Button>
+
           </div>
+
         </div>
       )}
+
     </div>
   );
 };

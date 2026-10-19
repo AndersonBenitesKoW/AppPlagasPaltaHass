@@ -55,6 +55,15 @@ class Container:
                 imgsz=settings.yolo_imgsz,
                 conf_minima=0.10,
             )
+        # 2. Cargar detector de frutos si existe el archivo
+        ruta_frutos = settings.modelos_dir / settings.modelo_frutos
+        if ruta_frutos.exists():
+            verificar_sha256(ruta_frutos, settings.sha256_modelo_frutos)
+            detectores_dict[Organo.FRUTO] = DetectorYolo(
+                ruta_pesos=ruta_frutos,
+                imgsz=settings.yolo_imgsz,
+                conf_minima=0.10,
+            )
 
         detectores = RegistroDetectores(detectores_dict)
         almacen = AlmacenLocal(settings.almacen_local_dir)

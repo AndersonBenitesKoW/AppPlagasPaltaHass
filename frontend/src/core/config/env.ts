@@ -20,7 +20,7 @@ const runtimeConfig = typeof window !== 'undefined' ? window.__APP_CONFIG__ : un
 
 export const env = EnvSchema.parse({
   apiBaseUrl:
-    runtimeConfig?.apiBaseUrl || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+    import.meta.env.VITE_API_BASE_URL || runtimeConfig?.apiBaseUrl || 'http://localhost:8000',
   authUrl:
     runtimeConfig?.authUrl ||
     import.meta.env.VITE_AUTH_URL ||

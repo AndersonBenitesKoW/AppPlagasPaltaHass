@@ -5,6 +5,7 @@ import { Badge, type BadgeVariant } from '../../../shared/ui/Badge';
 import { Button } from '../../../shared/ui/Button';
 import type { Diagnostico } from '../../../shared/types/diagnostico';
 import { History, Calendar, CheckCircle2, AlertTriangle, Search } from 'lucide-react';
+import { getApiUrl } from '../../../core/config/api-url';
 
 function getBadgeVariant(enfermedad: string): BadgeVariant {
   if (enfermedad.includes('sana') || enfermedad.includes('sano')) return 'sano';
@@ -141,10 +142,10 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
                 {/* Miniatura y badge superpuesto */}
                 <div className="relative aspect-video rounded-xl overflow-hidden bg-black/50 border border-dark-border">
                   <img
-                    src={item.imagen_url}
-                    alt="Hoja analizada"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+  src={getApiUrl(item.imagen_url)}
+  alt="Hoja analizada"
+  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+/>
                   <div className="absolute top-2.5 left-2.5">
                     {item.es_sano ? (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/90 text-white backdrop-blur-md shadow-md">
