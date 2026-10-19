@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
 import { useHistorial } from '../hooks/useHistorial';
+import { useEliminarDiagnostico } from '../hooks/useEliminarDiagnostico';
+import { exportarReporteInspeccion } from '../lib/reporte-inspeccion';
 import { Card } from '../../../shared/ui/Card';
 import { Badge, type BadgeVariant } from '../../../shared/ui/Badge';
 import { Button } from '../../../shared/ui/Button';
 import type { Diagnostico } from '../../../shared/types/diagnostico';
-import { History, Calendar, CheckCircle2, AlertTriangle, Search } from 'lucide-react';
+import {
+  History,
+  Calendar,
+  CheckCircle2,
+  AlertTriangle,
+  Search,
+  Trash2,
+  Download,
+} from 'lucide-react';
 import { getApiUrl } from '../../../core/config/api-url';
 
 function getBadgeVariant(enfermedad: string): BadgeVariant {
@@ -37,6 +47,36 @@ export interface HistorialListaProps {
 export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) => {
   const { data: historial, isLoading, isError, refetch } = useHistorial();
   const [filtro, setFiltro] = useState<'todos' | 'enfermos' | 'sanos'>('todos');
+  const eliminar = useEliminarDiagnostico();
+  // 'todo' = exportando la lista completa; un id = exportando ese registro.
+  const [exportando, setExportando] = useState<string | null>(null);
+  const [errorAccion, setErrorAccion] = useState<string | null>(null);
+
+  const exportar = async (clave: string, items: Diagnostico[]) => {
+    setExportando(clave);
+    setErrorAccion(null);
+    try {
+      await exportarReporteInspeccion(items);
+    } catch {
+      setErrorAccion('No se pudo generar el reporte de inspección.');
+    } finally {
+      setExportando(null);
+    }
+  };
+
+  const confirmarEliminar = (item: Diagnostico) => {
+    const fecha = new Date(item.creado_en).toLocaleString('es-PE', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+    if (!window.confirm(`¿Eliminar el registro del ${fecha}? Esta acción no se puede deshacer.`)) {
+      return;
+    }
+    setErrorAccion(null);
+    eliminar.mutate(item.id, {
+      onError: () => setErrorAccion('No se pudo eliminar el registro.'),
+    });
+  };
 
   if (isLoading) {
     return (
@@ -82,40 +122,60 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
           </div>
         </div>
 
-        {/* Filtros */}
-        <div className="flex items-center gap-1.5 p-1 bg-black/40 rounded-xl border border-dark-border self-stretch sm:self-auto">
-          <button
-            onClick={() => setFiltro('todos')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              filtro === 'todos'
-                ? 'bg-emerald-500 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 self-stretch sm:self-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={itemsFiltrados.length === 0 || exportando !== null}
+            isLoading={exportando === 'todo'}
+            onClick={() => void exportar('todo', itemsFiltrados)}
+            title="Descargar reporte de inspección de los registros mostrados"
           >
-            Todos ({historial.length})
-          </button>
-          <button
-            onClick={() => setFiltro('enfermos')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              filtro === 'enfermos'
-                ? 'bg-rose-500 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Con Alerta ({historial.filter((h) => !h.es_sano).length})
-          </button>
-          <button
-            onClick={() => setFiltro('sanos')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              filtro === 'sanos'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Sanos ({historial.filter((h) => h.es_sano).length})
-          </button>
+            <Download className="w-3.5 h-3.5" />
+            Exportar reporte ({itemsFiltrados.length})
+          </Button>
+
+          {/* Filtros */}
+          <div className="flex items-center gap-1.5 p-1 bg-black/40 rounded-xl border border-dark-border self-stretch sm:self-auto">
+            <button
+              onClick={() => setFiltro('todos')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                filtro === 'todos'
+                  ? 'bg-emerald-500 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Todos ({historial.length})
+            </button>
+            <button
+              onClick={() => setFiltro('enfermos')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                filtro === 'enfermos'
+                  ? 'bg-rose-500 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Con Alerta ({historial.filter((h) => !h.es_sano).length})
+            </button>
+            <button
+              onClick={() => setFiltro('sanos')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                filtro === 'sanos'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Sanos ({historial.filter((h) => h.es_sano).length})
+            </button>
+          </div>
         </div>
       </div>
+
+      {errorAccion && (
+        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm">
+          {errorAccion}
+        </div>
+      )}
 
       {/* Grid del historial */}
       {itemsFiltrados.length === 0 ? (
@@ -142,10 +202,10 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
                 {/* Miniatura y badge superpuesto */}
                 <div className="relative aspect-video rounded-xl overflow-hidden bg-black/50 border border-dark-border">
                   <img
-  src={getApiUrl(item.imagen_url)}
-  alt="Hoja analizada"
-  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-/>
+                    src={getApiUrl(item.imagen_url)}
+                    alt="Hoja analizada"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                   <div className="absolute top-2.5 left-2.5">
                     {item.es_sano ? (
                       <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/90 text-white backdrop-blur-md shadow-md">
@@ -188,8 +248,39 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
                 </div>
               </div>
 
-              {/* Botón ver detalle */}
-              <div className="pt-4 mt-4 border-t border-dark-border flex justify-end">
+              {/* Acciones */}
+              <div className="pt-4 mt-4 border-t border-dark-border flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    variant="danger"
+                    size="icon"
+                    className="h-9 w-9"
+                    title="Eliminar registro"
+                    aria-label="Eliminar registro"
+                    disabled={eliminar.isPending && eliminar.variables === item.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      confirmarEliminar(item);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="h-9 w-9"
+                    title="Exportar reporte de esta inspección"
+                    aria-label="Exportar reporte de esta inspección"
+                    disabled={exportando !== null}
+                    isLoading={exportando === item.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void exportar(item.id, [item]);
+                    }}
+                  >
+                    {exportando !== item.id && <Download className="w-4 h-4" />}
+                  </Button>
+                </div>
                 <Button
                   variant="ghost"
                   size="sm"

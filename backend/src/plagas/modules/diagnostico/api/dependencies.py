@@ -31,3 +31,10 @@ def get_listar_historial(
     sesion: AsyncSession = Depends(get_sesion),
 ) -> Any:
     return container.listar_historial(sesion)
+
+
+def get_eliminar_diagnostico(
+    container: Any = Depends(get_container),
+    sesion: AsyncSession = Depends(get_sesion),
+) -> Any:
+    return container.eliminar_diagnostico(sesion)

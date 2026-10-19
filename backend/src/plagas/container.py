@@ -9,6 +9,9 @@ from .modules.diagnostico.application.ports import DetectorEnfermedades
 from .modules.diagnostico.application.use_cases.diagnosticar_imagen import (
     DiagnosticarImagen,
 )
+from .modules.diagnostico.application.use_cases.eliminar_diagnostico import (
+    EliminarDiagnostico,
+)
 from .modules.diagnostico.application.use_cases.listar_historial import ListarHistorial
 from .modules.diagnostico.application.use_cases.obtener_diagnostico import (
     ObtenerDiagnostico,
@@ -107,6 +110,14 @@ class Container:
     def obtener_diagnostico(self, sesion: AsyncSession) -> ObtenerDiagnostico:
         return ObtenerDiagnostico(
             lectura=RepositorioDiagnosticosSql(sesion),
+            almacen=self.almacen,
+        )
+
+    def eliminar_diagnostico(self, sesion: AsyncSession) -> EliminarDiagnostico:
+        repositorio = RepositorioDiagnosticosSql(sesion)
+        return EliminarDiagnostico(
+            lectura=repositorio,
+            escritura=repositorio,
             almacen=self.almacen,
         )
 

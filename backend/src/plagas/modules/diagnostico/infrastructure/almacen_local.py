@@ -24,5 +24,10 @@ class AlmacenLocal:
     async def url_publica(self, referencia: str) -> str:
         return f"{self._prefijo_url}/{referencia}"
 
+    async def eliminar(self, referencia: str) -> None:
+        # Solo el nombre de archivo: evita salir del directorio del almacén.
+        destino = self._dir / Path(referencia).name
+        await anyio.to_thread.run_sync(lambda: destino.unlink(missing_ok=True))
+
     def ruta_fisica(self, referencia: str) -> Path:
         return self._dir / referencia

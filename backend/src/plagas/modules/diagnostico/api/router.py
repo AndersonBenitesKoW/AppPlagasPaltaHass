@@ -1,10 +1,13 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Form, Request, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, Request, Response, UploadFile, status
 
 from plagas.modules.diagnostico.application.dtos import DiagnosticarImagenCommand
 from plagas.modules.diagnostico.application.use_cases.diagnosticar_imagen import DiagnosticarImagen
+from plagas.modules.diagnostico.application.use_cases.eliminar_diagnostico import (
+    EliminarDiagnostico,
+)
 from plagas.modules.diagnostico.application.use_cases.listar_historial import ListarHistorial
 from plagas.modules.diagnostico.application.use_cases.obtener_diagnostico import ObtenerDiagnostico
 from plagas.modules.diagnostico.domain.value_objects import Organo
@@ -14,6 +17,7 @@ from plagas.shared.domain.identidad import Usuario
 
 from .dependencies import (
     get_diagnosticar_imagen,
+    get_eliminar_diagnostico,
     get_listar_historial,
     get_obtener_diagnostico,
 )
@@ -99,3 +103,13 @@ async def obtener_diagnostico(
 ) -> DiagnosticoResponse:
     dto = await caso_uso.ejecutar(diagnostico_id, usuario)
     return DiagnosticoResponse.model_validate(dto, from_attributes=True)
+
+
+@router.delete("/{diagnostico_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def eliminar_diagnostico(
+    diagnostico_id: UUID,
+    usuario: UsuarioActual,
+    caso_uso: Annotated[EliminarDiagnostico, Depends(get_eliminar_diagnostico)],
+) -> Response:
+    await caso_uso.ejecutar(diagnostico_id, usuario)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
