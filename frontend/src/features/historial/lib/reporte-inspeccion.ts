@@ -175,7 +175,15 @@ function seccionDiagnostico(diag: Diagnostico, imagen: string | null, indice: nu
   </section>`;
 }
 
-function documentoHtml(diagnosticos: Diagnostico[], imagenes: (string | null)[]): string {
+// Se carga solo al pulsar "Descargar PDF"; requiere conexión a internet.
+const HTML2PDF_CDN =
+  'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+
+function documentoHtml(
+  diagnosticos: Diagnostico[],
+  imagenes: (string | null)[],
+  nombrePdf: string,
+): string {
   const total = diagnosticos.length;
   const enfermos = diagnosticos.filter((d) => !d.es_sano).length;
   const generado = new Date().toLocaleString('es-PE', { dateStyle: 'long', timeStyle: 'short' });
@@ -208,8 +216,10 @@ function documentoHtml(diagnosticos: Diagnostico[], imagenes: (string | null)[])
   .kpi { background: rgba(255,255,255,.1); border-radius: 10px; padding: 10px 16px; min-width: 120px; }
   .kpi b { display: block; font-size: 22px; }
   .resumen-enf { font-size: 13px; margin-top: 12px !important; }
-  .acciones { text-align: right; margin-bottom: 16px; }
+  .acciones { max-width: 1000px; margin: 0 auto 16px; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
   .acciones button { background: #059669; color: #fff; border: 0; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .acciones button.secundario { background: #fff; color: #065f46; border: 1.5px solid #059669; }
+  .acciones button:disabled { opacity: .6; cursor: wait; }
   .registro { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px 20px; margin-bottom: 18px; page-break-inside: avoid; break-inside: avoid; }
   .registro header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 14px; }
   .registro h2 { font-size: 17px; margin: 0; }
@@ -240,8 +250,11 @@ function documentoHtml(diagnosticos: Diagnostico[], imagenes: (string | null)[])
 </style>
 </head>
 <body>
-<div class="contenedor">
-  <div class="acciones"><button onclick="window.print()">Imprimir / Guardar como PDF</button></div>
+<div class="acciones">
+  <button type="button" class="secundario" onclick="window.print()">Imprimir</button>
+  <button type="button" id="btn-pdf" onclick="descargarPdf()">Descargar PDF</button>
+</div>
+<div class="contenedor" id="reporte">
   <div class="portada">
     <h1>Reporte de Inspección Fitosanitaria — Palta Hass</h1>
     <p>Generado el ${escapar(generado)} · PaltaVision (YOLO11)</p>
@@ -255,6 +268,41 @@ function documentoHtml(diagnosticos: Diagnostico[], imagenes: (string | null)[])
   ${diagnosticos.map((d, i) => seccionDiagnostico(d, imagenes[i], i + 1)).join('')}
   <footer class="pie">© ${new Date().getFullYear()} PaltaVision · Reporte generado automáticamente</footer>
 </div>
+<script>
+  function generarPdf(boton) {
+    return window.html2pdf()
+      .set({
+        margin: [8, 8, 8, 8],
+        filename: ${JSON.stringify(nombrePdf)},
+        image: { type: 'jpeg', quality: 0.92 },
+        html2canvas: { scale: 2, backgroundColor: '#ffffff' },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], avoid: '.registro' },
+      })
+      .from(document.getElementById('reporte'))
+      .save()
+      .finally(function () {
+        boton.disabled = false;
+        boton.textContent = 'Descargar PDF';
+      });
+  }
+
+  function descargarPdf() {
+    var boton = document.getElementById('btn-pdf');
+    boton.disabled = true;
+    boton.textContent = 'Generando PDF...';
+    if (window.html2pdf) return generarPdf(boton);
+    var script = document.createElement('script');
+    script.src = '${HTML2PDF_CDN}';
+    script.onload = function () { generarPdf(boton); };
+    script.onerror = function () {
+      boton.disabled = false;
+      boton.textContent = 'Descargar PDF';
+      alert('No se pudo cargar el generador de PDF (se necesita conexión a internet). Usa "Imprimir" y elige "Guardar como PDF".');
+    };
+    document.head.appendChild(script);
+  }
+</script>
 </body>
 </html>`;
 }
@@ -275,13 +323,12 @@ export async function exportarReporteInspeccion(diagnosticos: Diagnostico[]): Pr
   if (diagnosticos.length === 0) return;
 
   const imagenes = await Promise.all(diagnosticos.map(imagenAnotada));
-  const html = documentoHtml(diagnosticos, imagenes);
-
   const fecha = new Date().toISOString().slice(0, 10);
   const nombre =
     diagnosticos.length === 1
-      ? `inspeccion-${diagnosticos[0].id.slice(0, 8)}-${fecha}.html`
-      : `historial-inspecciones-${fecha}.html`;
+      ? `inspeccion-${diagnosticos[0].id.slice(0, 8)}-${fecha}`
+      : `historial-inspecciones-${fecha}`;
 
-  descargar(html, nombre);
+  const html = documentoHtml(diagnosticos, imagenes, `${nombre}.pdf`);
+  descargar(html, `${nombre}.html`);
 }
