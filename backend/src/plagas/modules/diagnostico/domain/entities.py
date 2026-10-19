@@ -4,7 +4,7 @@ from uuid import UUID
 
 from plagas.shared.domain.identidad import Usuario
 
-from .value_objects import Deteccion, Organo
+from .value_objects import Deteccion, Organo, Origen
 
 
 @dataclass(slots=True)
@@ -15,6 +15,7 @@ class Diagnostico:
     imagen_ref: str
     creado_en: datetime
     detecciones: tuple[Deteccion, ...] = field(default_factory=tuple)
+    origen: Origen = Origen.DATASET
 
     @classmethod
     def registrar(
@@ -27,6 +28,7 @@ class Diagnostico:
         detecciones: list[Deteccion],
         umbral: float,
         ahora: datetime,
+        origen: Origen = Origen.DATASET,
     ) -> "Diagnostico":
         filtradas = tuple(d for d in detecciones if d.confianza.valor >= umbral)
         return cls(
@@ -36,6 +38,7 @@ class Diagnostico:
             imagen_ref=imagen_ref,
             creado_en=ahora,
             detecciones=filtradas,
+            origen=origen,
         )
 
     def visible_para(self, usuario: Usuario) -> bool:

@@ -41,10 +41,10 @@ export const VisorDetecciones: React.FC<VisorDeteccionesProps> = ({
       {/* Contenedor relativo de imagen y overlay SVG */}
       <div className="relative w-full aspect-square max-h-[500px] flex items-center justify-center overflow-hidden">
         <img
-  src={getApiUrl(imagenUrl)}
-  alt="Hoja analizada"
-  className="w-full h-full object-contain"
-/>
+          src={getApiUrl(imagenUrl)}
+          alt="Hoja analizada"
+          className="w-full h-full object-contain"
+        />
 
         {mostrarCajas && (
           <svg

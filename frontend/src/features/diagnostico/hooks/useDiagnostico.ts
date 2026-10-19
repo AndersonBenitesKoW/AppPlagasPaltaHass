@@ -1,12 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import {
-  enviarDiagnostico,
-  enviarDiagnosticoLote,
-  type Organo,
-} from '../api/diagnostico.api';
+import { enviarDiagnostico, enviarDiagnosticoLote, type Organo } from '../api/diagnostico.api';
 
-import type { Diagnostico, DiagnosticosBatchResponse } from '../model/types';
+import type { Diagnostico, DiagnosticosBatchResponse, Origen } from '../model/types';
 
 export function useDiagnosticar() {
   const queryClient = useQueryClient();
@@ -14,9 +10,9 @@ export function useDiagnosticar() {
   const mutationIndividual = useMutation<
     Diagnostico,
     Error,
-    { file: File; organo: Organo }
+    { file: File; organo: Organo; origen?: Origen }
   >({
-    mutationFn: ({ file, organo }) => enviarDiagnostico(file, organo),
+    mutationFn: ({ file, organo, origen }) => enviarDiagnostico(file, organo, origen),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['historial'] });
     },
@@ -25,9 +21,9 @@ export function useDiagnosticar() {
   const mutationLote = useMutation<
     DiagnosticosBatchResponse,
     Error,
-    { files: File[]; organo: Organo }
+    { files: File[]; organo: Organo; origen?: Origen }
   >({
-    mutationFn: ({ files, organo }) => enviarDiagnosticoLote(files, organo),
+    mutationFn: ({ files, organo, origen }) => enviarDiagnosticoLote(files, organo, origen),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['historial'] });
     },
@@ -40,4 +36,3 @@ export function useDiagnosticar() {
     error: mutationIndividual.error || mutationLote.error,
   };
 }
-

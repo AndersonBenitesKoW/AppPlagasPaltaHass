@@ -1,4 +1,4 @@
-import type { Diagnostico } from '../../../shared/types/diagnostico';
+import type { Diagnostico, Origen } from '../../../shared/types/diagnostico';
 import { getApiUrl } from '../../../core/config/api-url';
 
 /**
@@ -32,6 +32,21 @@ const COLORES: Record<string, string> = {
   pudricion_peduncular: '#a855f7',
   sunblotch: '#ec4899',
 };
+
+const ORIGENES: Record<Origen, { titulo: string; etiqueta: string; descripcion: string }> = {
+  campo: {
+    titulo: 'Inspecciones de campo',
+    etiqueta: 'Campo (cámara)',
+    descripcion: 'Capturas tomadas en campo con la cámara en tiempo real.',
+  },
+  dataset: {
+    titulo: 'Pruebas con el dataset',
+    etiqueta: 'Dataset (prueba)',
+    descripcion: 'Imágenes de prueba del dataset subidas desde archivos.',
+  },
+};
+
+const ORDEN_ORIGENES: Origen[] = ['campo', 'dataset'];
 
 const RECOMENDACION_POR_DEFECTO =
   'Mantener el programa habitual de riego y fertilización. Monitorear periódicamente el dosel del árbol para detectar oportunamente cualquier cambio.';
@@ -147,7 +162,7 @@ function seccionDiagnostico(diag: Diagnostico, imagen: string | null, indice: nu
   return `
   <section class="registro">
     <header>
-      <h2>Inspección #${indice} — ${organo}</h2>
+      <h2>${diag.origen === 'campo' ? 'Inspección de campo' : 'Prueba de dataset'} #${indice} — ${organo}</h2>
       <span class="estado ${diag.es_sano ? 'sano' : 'alerta'}">${diag.es_sano ? 'SANO' : 'ALERTA'}</span>
     </header>
     <div class="cuerpo">
@@ -159,6 +174,7 @@ function seccionDiagnostico(diag: Diagnostico, imagen: string | null, indice: nu
           <dt>Fecha</dt><dd>${escapar(formatearFecha(diag.creado_en))}</dd>
           <dt>ID</dt><dd class="mono">${escapar(diag.id)}</dd>
           <dt>Órgano</dt><dd>${organo}</dd>
+          <dt>Origen</dt><dd>${ORIGENES[diag.origen].etiqueta}</dd>
           <dt>Veredicto</dt><dd><strong>${veredicto}</strong></dd>
         </dl>
         <h3>Enfermedades</h3>
@@ -186,6 +202,37 @@ function documentoHtml(
 ): string {
   const total = diagnosticos.length;
   const enfermos = diagnosticos.filter((d) => !d.es_sano).length;
+  const presentes = ORDEN_ORIGENES.filter((o) => diagnosticos.some((d) => d.origen === o));
+  const titulo =
+    presentes.length === 1
+      ? `${ORIGENES[presentes[0]].titulo} — Palta Hass`
+      : 'Reporte de Inspección Fitosanitaria — Palta Hass';
+  const kpisOrigen =
+    presentes.length > 1
+      ? presentes
+          .map(
+            (o) =>
+              `<div class="kpi"><b>${diagnosticos.filter((d) => d.origen === o).length}</b>${ORIGENES[o].etiqueta}</div>`,
+          )
+          .join('')
+      : '';
+
+  // Cada origen va en su propio bloque, con su resumen y su numeración.
+  const bloques = presentes
+    .map((o) => {
+      const indices = diagnosticos.flatMap((d, i) => (d.origen === o ? [i] : []));
+      const alerta = indices.filter((i) => !diagnosticos[i].es_sano).length;
+      const registros = indices
+        .map((i, n) => seccionDiagnostico(diagnosticos[i], imagenes[i], n + 1))
+        .join('');
+      return `
+  <div class="bloque-origen ${o}">
+    <h2>${ORIGENES[o].titulo}</h2>
+    <p>${ORIGENES[o].descripcion} ${indices.length} registros · ${alerta} con alerta · ${indices.length - alerta} sanos.</p>
+  </div>
+  ${registros}`;
+    })
+    .join('');
   const generado = new Date().toLocaleString('es-PE', { dateStyle: 'long', timeStyle: 'short' });
 
   const conteo = new Map<string, number>();
@@ -204,7 +251,7 @@ function documentoHtml(
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Reporte de Inspección — PaltaVision</title>
+<title>${escapar(titulo)} — PaltaVision</title>
 <style>
   * { box-sizing: border-box; }
   body { font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #1e293b; background: #f1f5f9; margin: 0; padding: 24px; }
@@ -216,6 +263,10 @@ function documentoHtml(
   .kpi { background: rgba(255,255,255,.1); border-radius: 10px; padding: 10px 16px; min-width: 120px; }
   .kpi b { display: block; font-size: 22px; }
   .resumen-enf { font-size: 13px; margin-top: 12px !important; }
+  .bloque-origen { border-left: 5px solid #059669; background: #ecfdf5; border-radius: 10px; padding: 12px 16px; margin: 26px 0 14px; break-after: avoid; page-break-after: avoid; }
+  .bloque-origen.dataset { border-left-color: #0284c7; background: #f0f9ff; }
+  .bloque-origen h2 { margin: 0 0 2px; font-size: 18px; }
+  .bloque-origen p { margin: 0; font-size: 12.5px; color: #475569; }
   .acciones { max-width: 1000px; margin: 0 auto 16px; display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
   .acciones button { background: #059669; color: #fff; border: 0; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; }
   .acciones button.secundario { background: #fff; color: #065f46; border: 1.5px solid #059669; }
@@ -256,16 +307,17 @@ function documentoHtml(
 </div>
 <div class="contenedor" id="reporte">
   <div class="portada">
-    <h1>Reporte de Inspección Fitosanitaria — Palta Hass</h1>
+    <h1>${escapar(titulo)}</h1>
     <p>Generado el ${escapar(generado)} · PaltaVision (YOLO11)</p>
     <div class="kpis">
       <div class="kpi"><b>${total}</b>Inspecciones</div>
       <div class="kpi"><b>${enfermos}</b>Con alerta</div>
       <div class="kpi"><b>${total - enfermos}</b>Sanas</div>
+      ${kpisOrigen}
     </div>
     ${resumenEnfermedades}
   </div>
-  ${diagnosticos.map((d, i) => seccionDiagnostico(d, imagenes[i], i + 1)).join('')}
+  ${bloques}
   <footer class="pie">© ${new Date().getFullYear()} PaltaVision · Reporte generado automáticamente</footer>
 </div>
 <script>
@@ -324,10 +376,12 @@ export async function exportarReporteInspeccion(diagnosticos: Diagnostico[]): Pr
 
   const imagenes = await Promise.all(diagnosticos.map(imagenAnotada));
   const fecha = new Date().toISOString().slice(0, 10);
+  const origenes = new Set(diagnosticos.map((d) => d.origen));
+  const prefijo = origenes.size > 1 ? 'historial' : origenes.has('campo') ? 'campo' : 'dataset';
   const nombre =
     diagnosticos.length === 1
-      ? `inspeccion-${diagnosticos[0].id.slice(0, 8)}-${fecha}`
-      : `historial-inspecciones-${fecha}`;
+      ? `inspeccion-${prefijo}-${diagnosticos[0].id.slice(0, 8)}-${fecha}`
+      : `${prefijo}-inspecciones-${fecha}`;
 
   const html = documentoHtml(diagnosticos, imagenes, `${nombre}.pdf`);
   descargar(html, `${nombre}.html`);

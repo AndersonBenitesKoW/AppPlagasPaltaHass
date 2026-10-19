@@ -11,6 +11,7 @@ from .config import Settings
 from .container import Container
 from .modules.catalogo.api.router import router as catalogo_router
 from .modules.diagnostico.api.router import router as diagnostico_router
+from .modules.diagnostico.infrastructure.orm import migrar_columna_origen
 from .shared.api.errors import registrar_manejadores_error
 from .shared.api.health import router as health_router
 from .shared.api.middlewares import RequestContextMiddleware
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     engine = app.state.container.sesiones.kw["bind"]
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(migrar_columna_origen)
     yield
     await engine.dispose()
 

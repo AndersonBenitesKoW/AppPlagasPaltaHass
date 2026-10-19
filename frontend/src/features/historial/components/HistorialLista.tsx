@@ -5,7 +5,7 @@ import { exportarReporteInspeccion } from '../lib/reporte-inspeccion';
 import { Card } from '../../../shared/ui/Card';
 import { Badge, type BadgeVariant } from '../../../shared/ui/Badge';
 import { Button } from '../../../shared/ui/Button';
-import type { Diagnostico } from '../../../shared/types/diagnostico';
+import type { Diagnostico, Origen } from '../../../shared/types/diagnostico';
 import {
   History,
   Calendar,
@@ -14,6 +14,8 @@ import {
   Search,
   Trash2,
   Download,
+  Camera,
+  Database,
 } from 'lucide-react';
 import { getApiUrl } from '../../../core/config/api-url';
 
@@ -40,6 +42,17 @@ function formatearNombre(codigo: string): string {
   }
 }
 
+const ORIGENES: Record<Origen, { titulo: string; descripcion: string }> = {
+  campo: {
+    titulo: 'Inspecciones de campo',
+    descripcion: 'Capturadas con la cámara en tiempo real',
+  },
+  dataset: {
+    titulo: 'Pruebas con el dataset',
+    descripcion: 'Imágenes de prueba subidas desde archivos',
+  },
+};
+
 export interface HistorialListaProps {
   onVerDetalle?: (diagnostico: Diagnostico) => void;
 }
@@ -47,6 +60,7 @@ export interface HistorialListaProps {
 export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) => {
   const { data: historial, isLoading, isError, refetch } = useHistorial();
   const [filtro, setFiltro] = useState<'todos' | 'enfermos' | 'sanos'>('todos');
+  const [origen, setOrigen] = useState<Origen | 'todos'>('todos');
   const eliminar = useEliminarDiagnostico();
   // 'todo' = exportando la lista completa; un id = exportando ese registro.
   const [exportando, setExportando] = useState<string | null>(null);
@@ -98,11 +112,129 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
     );
   }
 
-  const itemsFiltrados = historial.filter((item) => {
+  const porOrigen = historial.filter((item) => origen === 'todos' || item.origen === origen);
+  const contarOrigen = (o: Origen) => historial.filter((h) => h.origen === o).length;
+
+  const itemsFiltrados = porOrigen.filter((item) => {
     if (filtro === 'enfermos') return !item.es_sano;
     if (filtro === 'sanos') return item.es_sano;
     return true;
   });
+
+  const renderTarjeta = (item: Diagnostico) => (
+    <Card
+      key={item.id}
+      className="group overflow-hidden flex flex-col justify-between border-dark-border hover:border-emerald-500/40 cursor-pointer"
+      onClick={() => onVerDetalle?.(item)}
+    >
+      <div className="space-y-4">
+        {/* Miniatura y badge superpuesto */}
+        <div className="relative aspect-video rounded-xl overflow-hidden bg-black/50 border border-dark-border">
+          <img
+            src={getApiUrl(item.imagen_url)}
+            alt="Hoja analizada"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          <div className="absolute top-2.5 left-2.5">
+            {item.es_sano ? (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/90 text-white backdrop-blur-md shadow-md">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Sano
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/90 text-white backdrop-blur-md shadow-md">
+                <AlertTriangle className="w-3.5 h-3.5" /> Alerta
+              </span>
+            )}
+          </div>
+          <div className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-black/75 text-slate-200 backdrop-blur-md">
+            {item.origen === 'campo' ? (
+              <>
+                <Camera className="w-3 h-3" /> Campo
+              </>
+            ) : (
+              <>
+                <Database className="w-3 h-3" /> Dataset
+              </>
+            )}
+          </div>
+          <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/75 text-[11px] text-slate-300 font-mono">
+            {item.detecciones.length} cajas
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5 text-xs text-slate-400">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>
+              {new Date(item.creado_en).toLocaleString('es-PE', {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              })}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 pt-1">
+            {item.enfermedades.length === 0 ? (
+              <Badge variant="sano">Hoja Sana</Badge>
+            ) : (
+              item.enfermedades.map((enf) => (
+                <Badge key={enf} variant={getBadgeVariant(enf)}>
+                  {formatearNombre(enf)}
+                </Badge>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Acciones */}
+      <div className="pt-4 mt-4 border-t border-dark-border flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          <Button
+            variant="danger"
+            size="icon"
+            className="h-9 w-9"
+            title="Eliminar registro"
+            aria-label="Eliminar registro"
+            disabled={eliminar.isPending && eliminar.variables === item.id}
+            onClick={(e) => {
+              e.stopPropagation();
+              confirmarEliminar(item);
+            }}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="secondary"
+            size="icon"
+            className="h-9 w-9"
+            title="Exportar reporte de esta inspección"
+            aria-label="Exportar reporte de esta inspección"
+            disabled={exportando !== null}
+            isLoading={exportando === item.id}
+            onClick={(e) => {
+              e.stopPropagation();
+              void exportar(item.id, [item]);
+            }}
+          >
+            {exportando !== item.id && <Download className="w-4 h-4" />}
+          </Button>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-emerald-400 group-hover:text-emerald-300"
+          onClick={(e) => {
+            e.stopPropagation();
+            onVerDetalle?.(item);
+          }}
+        >
+          Ver Detecciones →
+        </Button>
+      </div>
+    </Card>
+  );
 
   return (
     <div className="space-y-6">
@@ -129,7 +261,7 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
             disabled={itemsFiltrados.length === 0 || exportando !== null}
             isLoading={exportando === 'todo'}
             onClick={() => void exportar('todo', itemsFiltrados)}
-            title="Descargar reporte de inspección de los registros mostrados"
+            title="Descargar reporte de inspección de los registros mostrados (separados por origen)"
           >
             <Download className="w-3.5 h-3.5" />
             Exportar reporte ({itemsFiltrados.length})
@@ -145,7 +277,7 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Todos ({historial.length})
+              Todos ({porOrigen.length})
             </button>
             <button
               onClick={() => setFiltro('enfermos')}
@@ -155,7 +287,7 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Con Alerta ({historial.filter((h) => !h.es_sano).length})
+              Con Alerta ({porOrigen.filter((h) => !h.es_sano).length})
             </button>
             <button
               onClick={() => setFiltro('sanos')}
@@ -165,10 +297,45 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
-              Sanos ({historial.filter((h) => h.es_sano).length})
+              Sanos ({porOrigen.filter((h) => h.es_sano).length})
             </button>
           </div>
         </div>
+      </div>
+
+      {/* Separación por origen: campo (cámara) vs. pruebas con el dataset */}
+      <div className="grid grid-cols-3 gap-2 p-1.5 bg-black/40 rounded-2xl border border-dark-border">
+        {(
+          [
+            { id: 'todos', etiqueta: 'Todos', icono: History, total: historial.length },
+            {
+              id: 'campo',
+              etiqueta: 'Campo (cámara)',
+              icono: Camera,
+              total: contarOrigen('campo'),
+            },
+            {
+              id: 'dataset',
+              etiqueta: 'Dataset (prueba)',
+              icono: Database,
+              total: contarOrigen('dataset'),
+            },
+          ] as const
+        ).map(({ id, etiqueta, icono: Icono, total }) => (
+          <button
+            key={id}
+            onClick={() => setOrigen(id)}
+            className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${
+              origen === id
+                ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/40'
+                : 'text-slate-400 hover:text-slate-200 border border-transparent'
+            }`}
+          >
+            <Icono className="w-4 h-4 shrink-0" />
+            <span className="truncate">{etiqueta}</span>
+            <span className="text-[11px] opacity-70">({total})</span>
+          </button>
+        ))}
       </div>
 
       {errorAccion && (
@@ -191,110 +358,44 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {itemsFiltrados.map((item) => (
-            <Card
-              key={item.id}
-              className="group overflow-hidden flex flex-col justify-between border-dark-border hover:border-emerald-500/40 cursor-pointer"
-              onClick={() => onVerDetalle?.(item)}
-            >
-              <div className="space-y-4">
-                {/* Miniatura y badge superpuesto */}
-                <div className="relative aspect-video rounded-xl overflow-hidden bg-black/50 border border-dark-border">
-                  <img
-                    src={getApiUrl(item.imagen_url)}
-                    alt="Hoja analizada"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  <div className="absolute top-2.5 left-2.5">
-                    {item.es_sano ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/90 text-white backdrop-blur-md shadow-md">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Sano
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/90 text-white backdrop-blur-md shadow-md">
-                        <AlertTriangle className="w-3.5 h-3.5" /> Alerta
-                      </span>
+        <div className="space-y-10">
+          {(['campo', 'dataset'] as const)
+            .filter((o) => origen === 'todos' || origen === o)
+            .map((o) => {
+              const items = itemsFiltrados.filter((item) => item.origen === o);
+              if (items.length === 0 && origen === 'todos') return null;
+              const Icono = o === 'campo' ? Camera : Database;
+              return (
+                <section key={o} className="space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                      <Icono className="w-5 h-5 text-emerald-400" />
+                      <div>
+                        <h3 className="text-base font-bold text-slate-200">
+                          {ORIGENES[o].titulo} ({items.length})
+                        </h3>
+                        <p className="text-xs text-slate-500">{ORIGENES[o].descripcion}</p>
+                      </div>
+                    </div>
+                    {origen === 'todos' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={exportando !== null}
+                        isLoading={exportando === `todo-${o}`}
+                        onClick={() => void exportar(`todo-${o}`, items)}
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        Exportar sección
+                      </Button>
                     )}
                   </div>
-                  <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/75 text-[11px] text-slate-300 font-mono">
-                    {item.detecciones.length} cajas
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {items.map(renderTarjeta)}
                   </div>
-                </div>
-
-                {/* Info */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>
-                      {new Date(item.creado_en).toLocaleString('es-PE', {
-                        dateStyle: 'medium',
-                        timeStyle: 'short',
-                      })}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {item.enfermedades.length === 0 ? (
-                      <Badge variant="sano">Hoja Sana</Badge>
-                    ) : (
-                      item.enfermedades.map((enf) => (
-                        <Badge key={enf} variant={getBadgeVariant(enf)}>
-                          {formatearNombre(enf)}
-                        </Badge>
-                      ))
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Acciones */}
-              <div className="pt-4 mt-4 border-t border-dark-border flex items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5">
-                  <Button
-                    variant="danger"
-                    size="icon"
-                    className="h-9 w-9"
-                    title="Eliminar registro"
-                    aria-label="Eliminar registro"
-                    disabled={eliminar.isPending && eliminar.variables === item.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      confirmarEliminar(item);
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="h-9 w-9"
-                    title="Exportar reporte de esta inspección"
-                    aria-label="Exportar reporte de esta inspección"
-                    disabled={exportando !== null}
-                    isLoading={exportando === item.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void exportar(item.id, [item]);
-                    }}
-                  >
-                    {exportando !== item.id && <Download className="w-4 h-4" />}
-                  </Button>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-emerald-400 group-hover:text-emerald-300"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onVerDetalle?.(item);
-                  }}
-                >
-                  Ver Detecciones →
-                </Button>
-              </div>
-            </Card>
-          ))}
+                </section>
+              );
+            })}
         </div>
       )}
     </div>

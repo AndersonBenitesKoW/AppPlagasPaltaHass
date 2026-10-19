@@ -3,7 +3,7 @@ from datetime import datetime
 from uuid import UUID
 
 from plagas.modules.diagnostico.domain.entities import Diagnostico
-from plagas.modules.diagnostico.domain.value_objects import Organo
+from plagas.modules.diagnostico.domain.value_objects import Organo, Origen
 
 
 @dataclass(frozen=True, slots=True)
@@ -12,6 +12,7 @@ class DiagnosticarImagenCommand:
     organo: Organo
     contenido: bytes
     tipo_mime: str
+    origen: Origen = Origen.DATASET
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,6 +40,7 @@ class DiagnosticoDTO:
     detecciones: list[DeteccionDTO]
     imagen_url: str
     creado_en: datetime
+    origen: Origen
 
     @classmethod
     def desde_entidad(cls, entidad: Diagnostico, imagen_url: str) -> "DiagnosticoDTO":
@@ -63,4 +65,5 @@ class DiagnosticoDTO:
             ],
             imagen_url=imagen_url,
             creado_en=entidad.creado_en,
+            origen=entidad.origen,
         )

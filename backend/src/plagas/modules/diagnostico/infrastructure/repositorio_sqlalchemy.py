@@ -9,6 +9,7 @@ from plagas.modules.diagnostico.domain.value_objects import (
     Confianza,
     Deteccion,
     Organo,
+    Origen,
 )
 
 from .orm import DiagnosticoORM
@@ -39,6 +40,7 @@ class RepositorioDiagnosticosSql:
             id=str(diagnostico.id),
             propietario_id=diagnostico.propietario_id,
             organo=diagnostico.organo.value,
+            origen=diagnostico.origen.value,
             imagen_ref=diagnostico.imagen_ref,
             es_sano=diagnostico.es_sano,
             enfermedades=diagnostico.enfermedades,
@@ -100,4 +102,5 @@ class RepositorioDiagnosticosSql:
             imagen_ref=orm.imagen_ref,
             creado_en=orm.creado_en,
             detecciones=tuple(detecciones),
+            origen=Origen(orm.origen or Origen.DATASET),
         )

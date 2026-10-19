@@ -21,8 +21,7 @@ export function iou(a: Deteccion['caja'], b: Deteccion['caja']): number {
   const x2 = Math.min(a.x2, b.x2);
   const y2 = Math.min(a.y2, b.y2);
   const interseccion = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
-  const union =
-    (a.x2 - a.x1) * (a.y2 - a.y1) + (b.x2 - b.x1) * (b.y2 - b.y1) - interseccion;
+  const union = (a.x2 - a.x1) * (a.y2 - a.y1) + (b.x2 - b.x1) * (b.y2 - b.y1) - interseccion;
   return union > 0 ? interseccion / union : 0;
 }
 

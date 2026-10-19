@@ -44,6 +44,7 @@ class DiagnosticarImagen:
             detecciones=detecciones,
             umbral=self._umbral,
             ahora=self._reloj.ahora(),
+            origen=cmd.origen,
         )
         await self._repositorio.guardar(diagnostico)
         imagen_url = await self._almacen.url_publica(imagen_ref)

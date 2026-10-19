@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from plagas.modules.diagnostico.domain.value_objects import Organo
+from plagas.modules.diagnostico.domain.value_objects import Organo, Origen
 
 
 class CajaSchema(BaseModel):
@@ -32,6 +32,7 @@ class DiagnosticoResponse(BaseModel):
     detecciones: list[DeteccionSchema]
     imagen_url: str
     creado_en: datetime
+    origen: Origen
 
 
 class DiagnosticosBatchResponse(BaseModel):

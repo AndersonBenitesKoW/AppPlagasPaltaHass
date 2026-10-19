@@ -8,11 +8,7 @@ interface DropzoneProps {
   isLoading: boolean;
 }
 
-export const Dropzone: React.FC<DropzoneProps> = ({
-  onAnalizar,
-  onAbrirCamara,
-  isLoading,
-}) => {
+export const Dropzone: React.FC<DropzoneProps> = ({ onAnalizar, onAbrirCamara, isLoading }) => {
   const [archivos, setArchivos] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -34,9 +30,7 @@ export const Dropzone: React.FC<DropzoneProps> = ({
 
     setArchivos((prev) => [...prev, ...permitidos]);
 
-    const nuevosPreviews = permitidos.map((f) =>
-      URL.createObjectURL(f),
-    );
+    const nuevosPreviews = permitidos.map((f) => URL.createObjectURL(f));
 
     setPreviews((prev) => [...prev, ...nuevosPreviews]);
   };
@@ -105,7 +99,6 @@ export const Dropzone: React.FC<DropzoneProps> = ({
 
   return (
     <div className="space-y-4">
-
       {/* ======================================================
           ÁREA PRINCIPAL DE SUBIDA
           ====================================================== */}
@@ -124,7 +117,6 @@ export const Dropzone: React.FC<DropzoneProps> = ({
             : 'border-emerald-500/25 bg-[#121915]/60 hover:border-emerald-500/50 hover:bg-[#121915]'
         }`}
       >
-
         {/* Input normal de archivos */}
         <input
           ref={inputRef}
@@ -142,7 +134,6 @@ export const Dropzone: React.FC<DropzoneProps> = ({
         />
 
         <div className="flex flex-col items-center">
-
           {/* Icono */}
           <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-5">
             <UploadCloud className="w-8 h-8 text-emerald-400" />
@@ -154,15 +145,10 @@ export const Dropzone: React.FC<DropzoneProps> = ({
           </h3>
 
           {/* Descripción */}
-          <p className="text-sm text-slate-400 mb-2">
-            o haz clic para seleccionar imágenes
-          </p>
+          <p className="text-sm text-slate-400 mb-2">o haz clic para seleccionar imágenes</p>
 
           {/* Formatos */}
-          <p className="text-xs text-slate-500">
-            JPG, PNG o WEBP
-          </p>
-
+          <p className="text-xs text-slate-500">JPG, PNG o WEBP</p>
         </div>
       </div>
 
@@ -190,18 +176,14 @@ export const Dropzone: React.FC<DropzoneProps> = ({
 
       {archivos.length > 0 && (
         <div className="space-y-4">
-
           {/* Cabecera */}
           <div className="flex items-center justify-between">
-
             <div className="flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-emerald-400" />
 
               <span className="text-sm font-medium text-white">
                 {archivos.length}{' '}
-                {archivos.length === 1
-                  ? 'imagen seleccionada'
-                  : 'imágenes seleccionadas'}
+                {archivos.length === 1 ? 'imagen seleccionada' : 'imágenes seleccionadas'}
               </span>
             </div>
 
@@ -212,18 +194,15 @@ export const Dropzone: React.FC<DropzoneProps> = ({
             >
               Limpiar todo
             </button>
-
           </div>
 
           {/* Imágenes */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-
             {previews.map((preview, index) => (
               <div
                 key={preview}
                 className="relative aspect-square rounded-2xl overflow-hidden border border-emerald-500/20 bg-[#121915]"
               >
-
                 <img
                   src={preview}
                   alt={`Vista previa ${index + 1}`}
@@ -241,19 +220,14 @@ export const Dropzone: React.FC<DropzoneProps> = ({
 
                 {/* Nombre */}
                 <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1">
-                  <p className="text-xs text-white truncate">
-                    {archivos[index].name}
-                  </p>
+                  <p className="text-xs text-white truncate">{archivos[index].name}</p>
                 </div>
-
               </div>
             ))}
-
           </div>
 
           {/* Analizar */}
           <div className="flex justify-center pt-2">
-
             <Button
               onClick={handleAnalizarClick}
               disabled={isLoading || archivos.length === 0}
@@ -271,12 +245,9 @@ export const Dropzone: React.FC<DropzoneProps> = ({
                 </>
               )}
             </Button>
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 };

@@ -179,7 +179,8 @@ export const CamaraTiempoReal: React.FC<CamaraTiempoRealProps> = ({
                   const etiqueta = `${formatClase(det.clase)} ${(det.confianza * 100).toFixed(0)}%`;
                   const altoEtiqueta = tamFuente * 1.5;
                   // Transición CSS: la caja se desliza entre detecciones en vez de saltar.
-                  const transicion = 'transform 150ms linear, width 150ms linear, height 150ms linear';
+                  const transicion =
+                    'transform 150ms linear, width 150ms linear, height 150ms linear';
                   return (
                     <g
                       key={det.id}
@@ -201,7 +202,9 @@ export const CamaraTiempoReal: React.FC<CamaraTiempoRealProps> = ({
                       />
                       <g
                         transform={
-                          det.caja.y1 * vh < altoEtiqueta ? undefined : `translate(0, ${-altoEtiqueta})`
+                          det.caja.y1 * vh < altoEtiqueta
+                            ? undefined
+                            : `translate(0, ${-altoEtiqueta})`
                         }
                       >
                         <rect
@@ -252,9 +255,7 @@ export const CamaraTiempoReal: React.FC<CamaraTiempoRealProps> = ({
 
       {/* Controles */}
       <div className="bg-black/90 px-6 pt-5 pb-6">
-        {errorGuardado && (
-          <p className="text-center text-rose-300 text-xs mb-3">{errorGuardado}</p>
-        )}
+        {errorGuardado && <p className="text-center text-rose-300 text-xs mb-3">{errorGuardado}</p>}
         <div className="flex items-center justify-center gap-6">
           <button
             type="button"

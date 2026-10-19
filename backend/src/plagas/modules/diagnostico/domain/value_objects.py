@@ -12,6 +12,13 @@ class Organo(StrEnum):
     FRUTO = "fruto"
 
 
+class Origen(StrEnum):
+    """De dónde proviene la imagen: captura en campo o imagen de prueba del dataset."""
+
+    CAMPO = "campo"
+    DATASET = "dataset"
+
+
 @dataclass(frozen=True, slots=True)
 class Confianza:
     valor: float

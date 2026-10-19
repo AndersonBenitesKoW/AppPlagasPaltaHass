@@ -10,7 +10,7 @@ from plagas.modules.diagnostico.application.use_cases.eliminar_diagnostico impor
 )
 from plagas.modules.diagnostico.application.use_cases.listar_historial import ListarHistorial
 from plagas.modules.diagnostico.application.use_cases.obtener_diagnostico import ObtenerDiagnostico
-from plagas.modules.diagnostico.domain.value_objects import Organo
+from plagas.modules.diagnostico.domain.value_objects import Organo, Origen
 from plagas.shared.api.auth import get_usuario_actual
 from plagas.shared.api.seguridad import limiter
 from plagas.shared.domain.identidad import Usuario
@@ -35,12 +35,14 @@ async def crear_diagnostico(
     usuario: UsuarioActual,
     caso_uso: Annotated[DiagnosticarImagen, Depends(get_diagnosticar_imagen)],
     organo: Annotated[Organo, Form()] = Organo.HOJA,
+    origen: Annotated[Origen, Form()] = Origen.DATASET,
 ) -> DiagnosticoResponse:
     comando = DiagnosticarImagenCommand(
         propietario_id=usuario.id,
         organo=organo,
         contenido=await imagen.read(),
         tipo_mime=imagen.content_type or "image/jpeg",
+        origen=origen,
     )
     resultado = await caso_uso.ejecutar(comando)
     return DiagnosticoResponse.model_validate(resultado, from_attributes=True)
@@ -56,6 +58,7 @@ async def crear_diagnosticos_lote(
     usuario: UsuarioActual,
     caso_uso: Annotated[DiagnosticarImagen, Depends(get_diagnosticar_imagen)],
     organo: Annotated[Organo, Form()] = Organo.HOJA,
+    origen: Annotated[Origen, Form()] = Origen.DATASET,
 ) -> DiagnosticosBatchResponse:
     resultados: list[DiagnosticoResponse] = []
     for img in imagenes:
@@ -64,6 +67,7 @@ async def crear_diagnosticos_lote(
             organo=organo,
             contenido=await img.read(),
             tipo_mime=img.content_type or "image/jpeg",
+            origen=origen,
         )
         dto = await caso_uso.ejecutar(comando)
         resultados.append(DiagnosticoResponse.model_validate(dto, from_attributes=True))

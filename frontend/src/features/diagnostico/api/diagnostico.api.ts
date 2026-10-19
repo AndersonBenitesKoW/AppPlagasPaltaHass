@@ -1,15 +1,17 @@
 import { env } from '../../../core/config/env';
-import type { Diagnostico, DiagnosticosBatchResponse } from '../model/types';
+import type { Diagnostico, DiagnosticosBatchResponse, Origen } from '../model/types';
 
 export type Organo = 'hoja' | 'fruto';
 
 export async function enviarDiagnostico(
   file: File,
   organo: Organo = 'hoja',
+  origen: Origen = 'dataset',
 ): Promise<Diagnostico> {
   const formData = new FormData();
   formData.append('imagen', file);
   formData.append('organo', organo);
+  formData.append('origen', origen);
 
   const response = await fetch(`${env.apiBaseUrl}/api/v1/diagnosticos`, {
     method: 'POST',
@@ -27,6 +29,7 @@ export async function enviarDiagnostico(
 export async function enviarDiagnosticoLote(
   files: File[],
   organo: Organo = 'hoja',
+  origen: Origen = 'dataset',
 ): Promise<DiagnosticosBatchResponse> {
   const formData = new FormData();
 
@@ -35,6 +38,7 @@ export async function enviarDiagnosticoLote(
   }
 
   formData.append('organo', organo);
+  formData.append('origen', origen);
 
   const response = await fetch(`${env.apiBaseUrl}/api/v1/diagnosticos/batch`, {
     method: 'POST',

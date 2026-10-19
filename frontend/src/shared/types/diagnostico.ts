@@ -11,6 +11,9 @@ export interface Deteccion {
   caja: BoundingBox;
 }
 
+/** campo = capturada con la cámara en tiempo real; dataset = imagen subida de prueba. */
+export type Origen = 'campo' | 'dataset';
+
 export interface Diagnostico {
   id: string;
   organo: string;
@@ -20,6 +23,7 @@ export interface Diagnostico {
   detecciones: Deteccion[];
   imagen_url: string;
   creado_en: string;
+  origen: Origen;
   conclusiones?: {
     recomendaciones_agronomicas?: string[];
   };

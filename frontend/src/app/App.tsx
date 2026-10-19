@@ -29,8 +29,9 @@ export const App: React.FC = () => {
   // Estado del resultado actual en vivo
   const [diagnosticosLote, setDiagnosticosLote] = useState<Diagnostico[]>([]);
   const [indiceLoteActivo, setIndiceLoteActivo] = useState<number>(0);
-  const [diagnosticoHistorialModal, setDiagnosticoHistorialModal] =
-    useState<Diagnostico | null>(null);
+  const [diagnosticoHistorialModal, setDiagnosticoHistorialModal] = useState<Diagnostico | null>(
+    null,
+  );
 
   const handleAnalizar = async (archivos: File[]) => {
     try {
@@ -38,6 +39,7 @@ export const App: React.FC = () => {
         const resultado = await analizarUno({
           file: archivos[0],
           organo: organoSeleccionado,
+          origen: 'dataset',
         });
 
         setDiagnosticosLote([resultado]);
@@ -46,6 +48,7 @@ export const App: React.FC = () => {
         const respuestaBatch = await analizarLote({
           files: archivos,
           organo: organoSeleccionado,
+          origen: 'dataset',
         });
 
         setDiagnosticosLote(respuestaBatch.diagnosticos);
@@ -60,8 +63,13 @@ export const App: React.FC = () => {
     setGuardandoCamara(true);
     setErrorCamara(null);
     try {
-      // El backend vuelve a analizar el cuadro a resolución completa y lo guarda en la BD.
-      const resultado = await analizarUno({ file: archivo, organo: organoSeleccionado });
+      // El backend vuelve a analizar el cuadro a resolución completa y lo guarda en la BD
+      // marcado como captura de campo, separado de las pruebas con el dataset.
+      const resultado = await analizarUno({
+        file: archivo,
+        organo: organoSeleccionado,
+        origen: 'campo',
+      });
       setDiagnosticosLote([resultado]);
       setIndiceLoteActivo(0);
       setCamaraAbierta(false);
@@ -103,8 +111,8 @@ export const App: React.FC = () => {
               </h1>
 
               <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-                Apunta la cámara a una hoja o fruto de palto para detectar enfermedades en
-                tiempo real, o sube una o varias fotografías para analizarlas.
+                Apunta la cámara a una hoja o fruto de palto para detectar enfermedades en tiempo
+                real, o sube una o varias fotografías para analizarlas.
               </p>
             </div>
 
@@ -112,9 +120,7 @@ export const App: React.FC = () => {
             {diagnosticosLote.length === 0 && (
               <Card className="max-w-3xl mx-auto bg-[#121915] border-emerald-500/20">
                 <div className="text-center mb-5">
-                  <h2 className="text-base font-bold text-slate-200">
-                    ¿Qué quieres analizar?
-                  </h2>
+                  <h2 className="text-base font-bold text-slate-200">¿Qué quieres analizar?</h2>
                   <p className="text-xs text-slate-400 mt-1">
                     Selecciona el tipo de muestra antes de subir las imágenes.
                   </p>
@@ -268,9 +274,7 @@ export const App: React.FC = () => {
                 )}
 
                 {/* Detalle */}
-                {diagnosticoActual && (
-                  <DiagnosticoDetalle diagnostico={diagnosticoActual} />
-                )}
+                {diagnosticoActual && <DiagnosticoDetalle diagnostico={diagnosticoActual} />}
 
                 {/* Nuevo análisis */}
                 {diagnosticosLote.length === 1 && (
@@ -288,9 +292,7 @@ export const App: React.FC = () => {
 
         {/* Historial */}
         {tabActiva === 'historial' && (
-          <HistorialLista
-            onVerDetalle={(item) => setDiagnosticoHistorialModal(item)}
-          />
+          <HistorialLista onVerDetalle={(item) => setDiagnosticoHistorialModal(item)} />
         )}
 
         {/* Catálogo */}
@@ -322,11 +324,8 @@ export const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="border-t border-emerald-500/10 bg-[#080d0a] py-8 text-center text-xs text-slate-500 space-y-2">
-        <p>
-          © 2026 PaltaVision • Ultralytics YOLO11 • FastAPI • React 19 • Tailwind CSS
-        </p>
+        <p>© 2026 PaltaVision • Ultralytics YOLO11 • FastAPI • React 19 • Tailwind CSS</p>
       </footer>
     </div>
   );
 };
-
