@@ -27,18 +27,23 @@ class DiagnosticoORM(Base):
         String(20), nullable=False, default="dataset", server_default="dataset", index=True
     )
     creado_en: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True, nullable=False)
+    eliminado_en: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), index=True, nullable=True, default=None
+    )
 
 
-def migrar_columna_origen(conn: Connection) -> None:
-    """Agrega la columna `origen` a bases creadas antes de que existiera.
+# Columnas agregadas después de la primera versión de la tabla.
+_COLUMNAS_NUEVAS = {
+    # Los registros previos quedan como "dataset".
+    "origen": "VARCHAR(20) NOT NULL DEFAULT 'dataset'",
+    # NULL = no está en la papelera.
+    "eliminado_en": "TIMESTAMP NULL",
+}
 
-    `create_all` no altera tablas existentes; los registros previos quedan como "dataset".
-    """
+
+def migrar_columnas(conn: Connection) -> None:
+    """Agrega a bases existentes las columnas nuevas, que `create_all` no crea en tablas viejas."""
     columnas = {c["name"] for c in inspect(conn).get_columns(DiagnosticoORM.__tablename__)}
-    if "origen" not in columnas:
-        conn.execute(
-            text(
-                "ALTER TABLE diagnosticos "
-                "ADD COLUMN origen VARCHAR(20) NOT NULL DEFAULT 'dataset'"
-            )
-        )
+    for nombre, definicion in _COLUMNAS_NUEVAS.items():
+        if nombre not in columnas:
+            conn.execute(text(f"ALTER TABLE diagnosticos ADD COLUMN {nombre} {definicion}"))

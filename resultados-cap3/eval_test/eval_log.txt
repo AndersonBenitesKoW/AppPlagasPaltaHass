@@ -1,0 +1,349 @@
+Ultralytics 8.4.183  Python-3.13.16 torch-2.14.1+cpu CPU (12th Gen Intel Core i7-12700)
+YOLO11s summary (fused): 100 layers, 9,415,122 parameters, 0 gradients, 21.4 GFLOPs
+[KDownloading https://ultralytics.com/assets/Arial.ttf to 'C:\Users\USUARIO\AppData\Roaming\Ultralytics\Arial.ttf': 100% ━━━━━━━━━━━━ 755.1KB 9.9MB/s 0.1s
+WARNING [34m[1mval: [0mSlow image access detected (ping: 0.0±0.0 ms, read: 48.4±18.2 MB/s, size: 46.8 KB). Use local storage instead of remote/mounted storage for better performance. See https://docs.ultralytics.com/guides/model-training-tips
+[K[34m[1mval: [0mScanning D:\AppWebPlagasPaltaHass\ml\datasets\DatasetFrutos\test\labels... 158 images, 0 backgrounds, 0 corrupt: 41% ━━━━╸─────── 158/381 459.9it/s 0.1s<0.5s[K[34m[1mval: [0mScanning D:\AppWebPlagasPaltaHass\ml\datasets\DatasetFrutos\test\labels... 333 images, 0 backgrounds, 0 corrupt: 87% ━━━━━━━━━━── 333/381 842.6it/s 0.2s<0.1s[K[34m[1mval: [0mScanning D:\AppWebPlagasPaltaHass\ml\datasets\DatasetFrutos\test\labels... 381 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 381/381 1.7Kit/s 0.2s
+[34m[1mval: [0mNew cache created: D:\AppWebPlagasPaltaHass\ml\datasets\DatasetFrutos\test\labels.cache
+[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 2% ──────────── 1/48 17.4s/it 5.2s<13:36[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 4% ──────────── 2/48 9.8s/it 10.0s<7:29[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 6% ╸─────────── 3/48 7.7s/it 15.1s<5:45[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 8% ━─────────── 4/48 6.5s/it 20.0s<4:48[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 10% ━─────────── 5/48 5.9s/it 24.7s<4:12[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 12% ━─────────── 6/48 5.3s/it 29.0s<3:42[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 14% ━╸────────── 7/48 5.0s/it 33.4s<3:24[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 16% ━━────────── 8/48 4.8s/it 38.0s<3:14[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 18% ━━────────── 9/48 4.7s/it 42.3s<3:02[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 20% ━━────────── 10/48 4.5s/it 46.5s<2:53[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 22% ━━╸───────── 11/48 4.5s/it 50.9s<2:45[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 25% ━━━───────── 12/48 4.4s/it 55.2s<2:39[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 27% ━━━───────── 13/48 4.4s/it 59.5s<2:34[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 29% ━━━───────── 14/48 4.4s/it 1:04<2:28[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 31% ━━━╸──────── 15/48 4.4s/it 1:08<2:24[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 33% ━━━━──────── 16/48 4.3s/it 1:12<2:19[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 35% ━━━━──────── 17/48 4.3s/it 1:17<2:14[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 37% ━━━━──────── 18/48 4.3s/it 1:21<2:10[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 39% ━━━━╸─────── 19/48 4.3s/it 1:25<2:05[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 41% ━━━━━─────── 20/48 4.3s/it 1:30<2:01[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 43% ━━━━━─────── 21/48 4.3s/it 1:34<1:57[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 45% ━━━━━─────── 22/48 4.3s/it 1:38<1:53[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 47% ━━━━━╸────── 23/48 4.4s/it 1:43<1:50[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 24/48 4.4s/it 1:47<1:45[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 52% ━━━━━━────── 25/48 4.3s/it 1:52<1:40[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 54% ━━━━━━────── 26/48 4.3s/it 1:56<1:35[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 56% ━━━━━━╸───── 27/48 4.3s/it 2:00<1:31[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 58% ━━━━━━━───── 28/48 4.3s/it 2:04<1:26[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 60% ━━━━━━━───── 29/48 4.3s/it 2:09<1:22[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 62% ━━━━━━━───── 30/48 4.3s/it 2:13<1:18[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 64% ━━━━━━━╸──── 31/48 4.4s/it 2:18<1:14[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 66% ━━━━━━━━──── 32/48 4.3s/it 2:22<1:09[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 68% ━━━━━━━━──── 33/48 4.3s/it 2:26<1:05[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 70% ━━━━━━━━──── 34/48 4.3s/it 2:30<1:00[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 72% ━━━━━━━━╸─── 35/48 4.4s/it 2:35<56.6s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 75% ━━━━━━━━━─── 36/48 4.4s/it 2:39<52.2s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 77% ━━━━━━━━━─── 37/48 4.4s/it 2:44<48.0s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 79% ━━━━━━━━━─── 38/48 4.4s/it 2:48<44.3s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 81% ━━━━━━━━━╸── 39/48 4.4s/it 2:52<39.5s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 83% ━━━━━━━━━━── 40/48 4.4s/it 2:57<35.0s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 85% ━━━━━━━━━━── 41/48 4.4s/it 3:01<30.5s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 87% ━━━━━━━━━━── 42/48 4.3s/it 3:05<26.1s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 89% ━━━━━━━━━━╸─ 43/48 4.3s/it 3:10<21.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 91% ━━━━━━━━━━━─ 44/48 4.3s/it 3:14<17.4s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 93% ━━━━━━━━━━━─ 45/48 4.3s/it 3:18<13.0s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 95% ━━━━━━━━━━━─ 46/48 4.3s/it 3:23<8.6s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 97% ━━━━━━━━━━━╸ 47/48 4.3s/it 3:27<4.3s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 48/48 4.4s/it 3:30
+                   all        381        535      0.806      0.683      0.764      0.579
+            fruto_sano         61        104      0.714      0.558      0.668       0.44
+     antracnosis_fruto        126        192      0.712      0.562      0.627      0.354
+            cercospora        100        112      0.869      0.786      0.864      0.678
+                  rona         39         53      0.702      0.623      0.728      0.643
+  pudricion_peduncular         33         34      0.895      0.749      0.803      0.724
+             sunblotch         22         40      0.942      0.818      0.894      0.635
+Speed: 4.7ms preprocess, 524.6ms inference, 0.0ms loss, 0.9ms postprocess per image
+Results saved to [1mC:\Users\USUARIO\AppData\Local\Temp\claude\D--AppWebPlagasPaltaHass\b09be078-6672-4324-bc0a-38cb8b84a2c2\scratchpad\eval\frutos[0m
+{
+  "modelo": "frutos",
+  "global": {
+    "P": 0.805732154384258,
+    "R": 0.6826367215560735,
+    "F1": 0.7390941388420061,
+    "mAP50": 0.7641697176792074,
+    "mAP50_95": 0.5787780131945284
+  },
+  "por_clase": {
+    "fruto_sano": {
+      "P": 0.7143505787416978,
+      "R": 0.5576923076923077,
+      "F1": 0.6263748290383787,
+      "mAP50": 0.6684988185504916,
+      "mAP50_95": 0.43964946864795545
+    },
+    "antracnosis_fruto": {
+      "P": 0.712054969330891,
+      "R": 0.5625,
+      "F1": 0.6285031715170273,
+      "mAP50": 0.6270949962844456,
+      "mAP50_95": 0.3535909751508967
+    },
+    "cercospora": {
+      "P": 0.8693117069875929,
+      "R": 0.7857142857142857,
+      "F1": 0.8254016914909661,
+      "mAP50": 0.8635987988683456,
+      "mAP50_95": 0.6778285031695556
+    },
+    "rona": {
+      "P": 0.7016667334987199,
+      "R": 0.6226415094339622,
+      "F1": 0.6597962919837367,
+      "mAP50": 0.7280753257746783,
+      "mAP50_95": 0.6431558002747748
+    },
+    "pudricion_peduncular": {
+      "P": 0.8946331707813109,
+      "R": 0.7494326928865137,
+      "F1": 0.8156210297177032,
+      "mAP50": 0.8034094001759013,
+      "mAP50_95": 0.7236171713339226
+    },
+    "sunblotch": {
+      "P": 0.9423757669653359,
+      "R": 0.8178395336093709,
+      "F1": 0.8757021456273758,
+      "mAP50": 0.8943409664213814,
+      "mAP50_95": 0.6348261605900648
+    }
+  },
+  "speed_val_ms": {
+    "preprocess": 4.694448556510237,
+    "inference": 524.6258488194125,
+    "loss": 0.0004125983586285527,
+    "postprocess": 0.8550937001207194
+  },
+  "imagen": {
+    "n": 381,
+    "TP": 276,
+    "FP": 7,
+    "FN": 44,
+    "TN": 54,
+    "sensibilidad": [
+      0.8625,
+      0.8204463927461817,
+      0.8959532297853275
+    ],
+    "especificidad": [
+      0.8852459016393442,
+      0.7815546169010973,
+      0.9432886935662569
+    ],
+    "exactitud": [
+      0.8661417322834646,
+      0.828271197885983,
+      0.8967024016417188
+    ],
+    "vpp": [
+      0.9752650176678446,
+      0.9498318649071553,
+      0.9879679521347244
+    ],
+    "vpn": [
+      0.5510204081632653,
+      0.45247368335883686,
+      0.6457180182640755
+    ],
+    "kappa": 0.6003743084548464
+  },
+  "deteccion_por_enfermedad": {
+    "antracnosis_fruto": {
+      "detectadas": 89,
+      "presentes": 126,
+      "tasa": [
+        0.7063492063492064,
+        0.6216680903121974,
+        0.7788198888870732
+      ]
+    },
+    "cercospora": {
+      "detectadas": 85,
+      "presentes": 100,
+      "tasa": [
+        0.85,
+        0.7671626666784216,
+        0.906940968088377
+      ]
+    },
+    "rona": {
+      "detectadas": 31,
+      "presentes": 39,
+      "tasa": [
+        0.7948717948717948,
+        0.6446572703687138,
+        0.8922040980208888
+      ]
+    },
+    "pudricion_peduncular": {
+      "detectadas": 26,
+      "presentes": 33,
+      "tasa": [
+        0.7878787878787878,
+        0.6224802241287064,
+        0.8932411343356381
+      ]
+    },
+    "sunblotch": {
+      "detectadas": 17,
+      "presentes": 22,
+      "tasa": [
+        0.7727272727272727,
+        0.5655964393704065,
+        0.8987710920517964
+      ]
+    }
+  },
+  "sensibilidad_por_tamano": {
+    "pequena (<2%)": {
+      "detectadas": 0,
+      "total": 17,
+      "tasa": [
+        0.0,
+        0.0,
+        0.18432366037156456
+      ]
+    },
+    "mediana (2-10%)": {
+      "detectadas": 33,
+      "total": 97,
+      "tasa": [
+        0.3402061855670103,
+        0.25362119291999513,
+        0.438965993320604
+      ]
+    },
+    "grande (>10%)": {
+      "detectadas": 242,
+      "total": 317,
+      "tasa": [
+        0.7634069400630915,
+        0.7136422639933876,
+        0.8068638050450413
+      ]
+    }
+  },
+  "tiempo_ms": {
+    "media": 510.5799515853284,
+    "de": 25.36555736484801,
+    "mediana": 502.98009999096394,
+    "p95": 587.1838150196709,
+    "n": 378
+  }
+}
+Ultralytics 8.4.183  Python-3.13.16 torch-2.14.1+cpu CPU (12th Gen Intel Core i7-12700)
+YOLO11s summary (fused): 100 layers, 9,414,348 parameters, 0 gradients, 21.4 GFLOPs
+WARNING [34m[1mval: [0mSlow image access detected (ping: 0.1±0.0 ms, read: 15.7±7.6 MB/s, size: 123.6 KB). Use local storage instead of remote/mounted storage for better performance. See https://docs.ultralytics.com/guides/model-training-tips
+[K[34m[1mval: [0mScanning D:\AppWebPlagasPaltaHass\ml\datasets\DatasetHojas\test\labels... 103 images, 0 backgrounds, 0 corrupt: 43% ━━━━━─────── 103/237 308.1it/s 0.1s<0.4s[K[34m[1mval: [0mScanning D:\AppWebPlagasPaltaHass\ml\datasets\DatasetHojas\test\labels... 212 images, 0 backgrounds, 0 corrupt: 89% ━━━━━━━━━━╸─ 212/237 529.9it/s 0.2s<0.0s[K[34m[1mval: [0mScanning D:\AppWebPlagasPaltaHass\ml\datasets\DatasetHojas\test\labels... 237 images, 0 backgrounds, 0 corrupt: 100% ━━━━━━━━━━━━ 237/237 1.0Kit/s 0.2s
+[34m[1mval: [0mNew cache created: D:\AppWebPlagasPaltaHass\ml\datasets\DatasetHojas\test\labels.cache
+[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 3% ──────────── 1/30 15.7s/it 4.7s<7:34[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 6% ╸─────────── 2/30 9.4s/it 9.5s<4:22[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 10% ━─────────── 3/30 7.3s/it 14.4s<3:18[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 13% ━╸────────── 4/30 6.5s/it 19.4s<2:48[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 16% ━━────────── 5/30 5.9s/it 24.4s<2:28[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 20% ━━────────── 6/30 5.4s/it 29.0s<2:10[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 23% ━━╸───────── 7/30 5.1s/it 33.4s<1:57[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 26% ━━━───────── 8/30 5.0s/it 38.1s<1:49[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 30% ━━━╸──────── 9/30 4.9s/it 42.9s<1:43[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 33% ━━━━──────── 10/30 4.9s/it 47.7s<1:38[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 36% ━━━━──────── 11/30 4.9s/it 52.7s<1:33[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 40% ━━━━╸─────── 12/30 4.9s/it 57.7s<1:29[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 43% ━━━━━─────── 13/30 5.0s/it 1:03<1:24[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 46% ━━━━━╸────── 14/30 5.0s/it 1:08<1:21[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 15/30 5.0s/it 1:13<1:15[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 53% ━━━━━━────── 16/30 4.9s/it 1:18<1:09[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 56% ━━━━━━╸───── 17/30 4.8s/it 1:22<1:03[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 60% ━━━━━━━───── 18/30 4.9s/it 1:27<58.5s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 63% ━━━━━━━╸──── 19/30 4.9s/it 1:32<54.0s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 66% ━━━━━━━━──── 20/30 4.9s/it 1:37<49.2s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 70% ━━━━━━━━──── 21/30 4.8s/it 1:42<43.4s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 73% ━━━━━━━━╸─── 22/30 4.7s/it 1:46<37.3s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 76% ━━━━━━━━━─── 23/30 4.7s/it 1:51<33.1s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 80% ━━━━━━━━━╸── 24/30 4.9s/it 1:56<29.1s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 83% ━━━━━━━━━━── 25/30 5.0s/it 2:01<24.9s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 86% ━━━━━━━━━━── 26/30 5.0s/it 2:06<20.0s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 90% ━━━━━━━━━━╸─ 27/30 5.0s/it 2:12<15.1s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 93% ━━━━━━━━━━━─ 28/30 5.0s/it 2:17<10.0s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 96% ━━━━━━━━━━━╸ 29/30 5.0s/it 2:21<5.0s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 30/30 4.8s/it 2:25
+                   all        237        276      0.747       0.87      0.848      0.802
+             hoja_sana         56         69      0.586      0.964      0.885      0.822
+      antracnosis_hoja         65         69      0.762       0.87      0.816      0.768
+                 plaga         46         68      0.653      0.676      0.706      0.669
+deficiencia_nutricional         70         70      0.988      0.971      0.984      0.948
+Speed: 4.1ms preprocess, 586.3ms inference, 0.0ms loss, 2.6ms postprocess per image
+Results saved to [1mC:\Users\USUARIO\AppData\Local\Temp\claude\D--AppWebPlagasPaltaHass\b09be078-6672-4324-bc0a-38cb8b84a2c2\scratchpad\eval\hojas[0m
+{
+  "modelo": "hojas",
+  "global": {
+    "P": 0.7472380656661692,
+    "R": 0.8703251454187415,
+    "F1": 0.804098502867335,
+    "mAP50": 0.8477628744975902,
+    "mAP50_95": 0.8017527413381986
+  },
+  "por_clase": {
+    "hoja_sana": {
+      "P": 0.5859121884476013,
+      "R": 0.9638362046197962,
+      "F1": 0.7287936318953878,
+      "mAP50": 0.884832358924598,
+      "mAP50_95": 0.8217678839683348
+    },
+    "antracnosis_hoja": {
+      "P": 0.762409055364332,
+      "R": 0.8695652173913043,
+      "F1": 0.8124691755704575,
+      "mAP50": 0.8158451444284749,
+      "mAP50_95": 0.7683615163397695
+    },
+    "plaga": {
+      "P": 0.6529369546720237,
+      "R": 0.6764705882352942,
+      "F1": 0.6644954711804864,
+      "mAP50": 0.706049670312964,
+      "mAP50_95": 0.6688088772960123
+    },
+    "deficiencia_nutricional": {
+      "P": 0.98769406418072,
+      "R": 0.9714285714285714,
+      "F1": 0.9794937961881677,
+      "mAP50": 0.9843243243243244,
+      "mAP50_95": 0.9480726877486777
+    }
+  },
+  "speed_val_ms": {
+    "preprocess": 4.096215190503448,
+    "inference": 586.3415848093897,
+    "loss": 0.00012700494088012458,
+    "postprocess": 2.6333919833885813
+  },
+  "imagen": {
+    "n": 237,
+    "TP": 167,
+    "FP": 6,
+    "FN": 14,
+    "TN": 50,
+    "sensibilidad": [
+      0.9226519337016574,
+      0.8743664824709688,
+      0.9533692653260638
+    ],
+    "especificidad": [
+      0.8928571428571429,
+      0.7853131324833861,
+      0.9499613254188092
+    ],
+    "exactitud": [
+      0.9156118143459916,
+      0.8732556181449711,
+      0.944709384578811
+    ],
+    "vpp": [
+      0.9653179190751445,
+      0.9264092854885414,
+      0.9840099823760334
+    ],
+    "vpn": [
+      0.78125,
+      0.665669836692222,
+      0.8649780253865025
+    ],
+    "kappa": 0.7771718691237308
+  },
+  "deteccion_por_enfermedad": {
+    "antracnosis_hoja": {
+      "detectadas": 53,
+      "presentes": 65,
+      "tasa": [
+        0.8153846153846154,
+        0.7044577741729509,
+        0.8911123462193701
+      ]
+    },
+    "plaga": {
+      "detectadas": 36,
+      "presentes": 46,
+      "tasa": [
+        0.782608695652174,
+        0.6442603416081054,
+        0.8773922538141925
+      ]
+    },
+    "deficiencia_nutricional": {
+      "detectadas": 68,
+      "presentes": 70,
+      "tasa": [
+        0.9714285714285714,
+        0.9016755648760818,
+        0.9921295531061937
+      ]
+    }
+  },
+  "sensibilidad_por_tamano": {
+    "pequena (<2%)": {
+      "detectadas": 0,
+      "total": 0,
+      "tasa": [
+        NaN,
+        NaN,
+        NaN
+      ]
+    },
+    "mediana (2-10%)": {
+      "detectadas": 5,
+      "total": 14,
+      "tasa": [
+        0.35714285714285715,
+        0.16344490737202735,
+        0.6123599531785959
+      ]
+    },
+    "grande (>10%)": {
+      "detectadas": 161,
+      "total": 193,
+      "tasa": [
+        0.8341968911917098,
+        0.7753117410431022,
+        0.8800375347197446
+      ]
+    }
+  },
+  "tiempo_ms": {
+    "media": 175.5622213658614,
+    "de": 11.251233556653395,
+    "mediana": 176.38025002088398,
+    "p95": 195.90531497669872,
+    "n": 234
+  }
+}

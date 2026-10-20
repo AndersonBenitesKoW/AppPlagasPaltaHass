@@ -16,6 +16,8 @@ class Diagnostico:
     creado_en: datetime
     detecciones: tuple[Deteccion, ...] = field(default_factory=tuple)
     origen: Origen = Origen.DATASET
+    # Fecha en que se movió a la papelera; None = visible en el historial.
+    eliminado_en: datetime | None = None
 
     @classmethod
     def registrar(

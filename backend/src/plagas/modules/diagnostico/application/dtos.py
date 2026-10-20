@@ -41,6 +41,7 @@ class DiagnosticoDTO:
     imagen_url: str
     creado_en: datetime
     origen: Origen
+    eliminado_en: datetime | None = None
 
     @classmethod
     def desde_entidad(cls, entidad: Diagnostico, imagen_url: str) -> "DiagnosticoDTO":
@@ -66,4 +67,5 @@ class DiagnosticoDTO:
             imagen_url=imagen_url,
             creado_en=entidad.creado_en,
             origen=entidad.origen,
+            eliminado_en=entidad.eliminado_en,
         )

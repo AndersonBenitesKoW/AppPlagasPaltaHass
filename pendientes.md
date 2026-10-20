@@ -1,6 +1,10 @@
 # Pendientes de la tesis
 
-Documento de trabajo: `OPTIMIZACION DE PRODUCCION DE PALTA HASS - v2 Cap I corregido.docx` (copia con control de cambios; el original no se modificó).
+Documentos de trabajo (el original no se modificó):
+- `... - v2 Cap I corregido.docx`: correcciones del Cap. I con control de cambios.
+- `... - v3 Cap III resultados.docx`: el v2 más el Cap. III de resultados. Al abrirlo, presionar Ctrl+A y luego F9 para actualizar la numeración y los índices.
+
+Las métricas, las figuras y los scripts de evaluación están en `resultados-cap3/`.
 
 ---
 
@@ -28,22 +32,31 @@ Se agregaron en la nueva base teórica sobre YOLO y sus métricas, con referenci
 
 ## 3. Metas del Anexo 2 que todavía no tienen resultados
 
-Se alineó solo la meta con resultados disponibles: **precisión del modelo** (alto ≥ 85 %, aceptable 70–84 %, bajo < 70 % en mAP50; HE1 ≥ 70 %). Resultados en el split de validación: hojas mAP50 = 0.916 (alto) y frutos mAP50 = 0.793 (aceptable).
+Se alineó solo la meta con resultados disponibles: **precisión del modelo** (alto ≥ 85 %, aceptable 70–84 %, bajo < 70 % en mAP50; HE1 ≥ 70 %).
+
+Resultados en el split **test** (Cap. III): hojas mAP50 = 84.8 % (aceptable, a 0.2 puntos del nivel alto) y frutos mAP50 = 76.4 % (aceptable). En validación eran 91.6 % y 78.7 %. La HE1 se acepta con la prueba binomial (p < 0.001).
 
 Pendientes de contrastar cuando estén los datos de campo:
 
 | Dimensión | Meta actual en el Anexo 2 | Dato necesario |
 |---|---|---|
-| Velocidad de procesamiento | ≤ 150 ms por imagen | Medir el tiempo de inferencia en el servidor desplegado |
-| Capacidad de detección temprana | sensibilidad > 90 % (alta) | Recall por clase en el split test |
+| Velocidad de procesamiento | ≤ 150 ms por imagen | En CPU i7-12700 se midieron 176 ms (hojas) y 511 ms (frutos), así que la meta **no se cumple en CPU**. Medir en el servidor desplegado o redefinir la meta a ≤ 1 s por imagen |
+| Capacidad de detección temprana | sensibilidad > 90 % (alta) | Ya calculada en el Cap. III, tablas 12 y 13. La tasa de detección va de 70.6 % a 97.1 %; las lesiones pequeñas (< 2 % del área) dan 0/17. **La meta de > 90 % no se cumple**: bajarla a ≥ 70 % o justificarlo |
 | Precisión diagnóstica (VD) | coincidencia con el experto ≥ 85 % | Diagnóstico del agrónomo por árbol (pre y post) |
 | Tiempo de inspección (VD) | reducción ≥ 50 % | Tiempos cronometrados por árbol (manual y con sistema) |
 | Pérdidas por descarte (VD) | reducción ≥ 30 % | Conteos de frutos descartados y exportables |
 
 ## 4. Datos y evaluaciones para el Cap. III
 
-- [ ] Evaluar `hojas.pt` y `frutos.pt` en el **split test** (`yolo val split=test`) con métricas por clase. Las métricas actuales son del split de validación.
-- [ ] Subir la carpeta de la corrida de **frutos** (results.csv, matriz de confusión, curvas PR/F1). La carpeta `frutos/hojas/` contiene la corrida de **hojas**.
+- [x] Evaluar `hojas.pt` y `frutos.pt` en el split test: hecho, en `resultados-cap3/eval_test/`.
+- [x] Matrices de confusión: las de Ultralytics 8.4 (`plots_*/confusion_matrix*.png`) usan conf = 0.001 y **no deben usarse**. Las válidas están en `figuras/cm_*.png` (umbral 0.35) y van en el Cap. III como Figuras 4 y 5.
+- [ ] La corrida `frutos-entrenamiento/frutos_preciso` se **interrumpió** (no fue parada temprana) en la época 109 de 200, tras 5.0 h. Los checkpoints conservan el optimizador y la parada temprana recién tocaba en la época 133. Opcional: reanudarla con `YOLO('last.pt').train(resume=True)`.
+- [ ] Limpiar `backend/models/frutos.pt` (76 MB, incluye el optimizador) con `strip_optimizer`; queda en unos 19 MB.
+- [ ] La carpeta `frutos/hojas/` (corrida de hojas) se borró del directorio de trabajo, pero sigue en git. Restaurarla con `git checkout -- frutos/hojas`.
+- [ ] Las 18 inspecciones del PDF son del 7/10/2026, es decir, del modelo de frutos **anterior**. Repetir las inspecciones con el modelo nuevo.
+- [ ] 6 de 18 registros (33 %) tenían mal seleccionado el órgano. Conviene validar el órgano automáticamente o mostrar una confirmación en la app.
+- [ ] **Error en la app**: las acciones recomendadas muestran el texto de "sano" (mantener riego y fertilización) también en las inspecciones con alerta.
+- [ ] Diagnóstico del agrónomo para las 12 inspecciones válidas (coincidencia con el experto).
 - [ ] Descargar la base SQLite del **servidor desplegado** y la carpeta de imágenes. La `backend/plagas.db` local solo tiene 26 registros de prueba del 2026-10-07.
 - [ ] Relacionar cada foto con su árbol y sector (A/B). La tabla `diagnosticos` no guarda el código del árbol, el diagnóstico del experto ni los tiempos.
 - [ ] Actualizar `backend/models/manifest.json` (hoy solo registra `hojas.pt`).
@@ -58,4 +71,6 @@ Pendientes de contrastar cuando estén los datos de campo:
 - [ ] Para la precisión diagnóstica, usar McNemar y κ de Cohen; para tiempo y descarte, Shapiro-Wilk y luego t pareada o Wilcoxon.
 - [ ] Aspectos éticos: "destrucción de datos" contradice la retención de imágenes por 365 días que tiene el sistema.
 - [ ] Anexo 2: el resto de dimensiones figuran como "cuantitativa ordinal" y deberían ser continuas (solo se corrigió Precisión del modelo).
-- [ ] Numeración de tablas: el Cap. II empieza en "Tabla 2".
+- [x] Numeración de tablas: corregida en el v3 (Cap. II: tablas 1 y 2; Cap. III desde la Tabla 3).
+- [ ] Citar a Landis y Koch (1977) para la interpretación de κ (moderado/sustancial) del Cap. III y agregarlo a Referencias.
+- [ ] Cap. IV (Discusión y conclusiones) sigue siendo la plantilla de la tesis de referencia.

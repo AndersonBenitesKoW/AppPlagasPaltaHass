@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Protocol
 from uuid import UUID
 
@@ -26,6 +27,7 @@ class AlmacenImagenes(Protocol):
 class EscrituraDiagnosticos(Protocol):
     async def guardar(self, diagnostico: Diagnostico) -> None: ...
     async def eliminar(self, id: UUID) -> bool: ...
+    async def marcar_eliminado(self, id: UUID, cuando: datetime | None) -> None: ...
 
 
 class LecturaDiagnosticos(Protocol):
@@ -35,4 +37,5 @@ class LecturaDiagnosticos(Protocol):
         propietario_id: str | None = None,
         limite: int = 50,
         desplazamiento: int = 0,
+        en_papelera: bool = False,
     ) -> list[Diagnostico]: ...

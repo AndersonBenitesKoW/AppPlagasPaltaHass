@@ -11,21 +11,24 @@ from .config import Settings
 from .container import Container
 from .modules.catalogo.api.router import router as catalogo_router
 from .modules.diagnostico.api.router import router as diagnostico_router
-from .modules.diagnostico.infrastructure.orm import migrar_columna_origen
+from .modules.diagnostico.infrastructure.orm import migrar_columnas
 from .shared.api.errors import registrar_manejadores_error
 from .shared.api.health import router as health_router
 from .shared.api.middlewares import RequestContextMiddleware
 from .shared.infrastructure.db import Base
 from .shared.infrastructure.logging import configurar_logging
+from .shared.infrastructure.persistencia import sembrar_datos_iniciales
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    settings = app.state.settings
+    sembrar_datos_iniciales(settings.database_url, Path(settings.almacen_local_dir))
     # Crear tablas en BD automáticamente al inicio
     engine = app.state.container.sesiones.kw["bind"]
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-        await conn.run_sync(migrar_columna_origen)
+        await conn.run_sync(migrar_columnas)
     yield
     await engine.dispose()
 

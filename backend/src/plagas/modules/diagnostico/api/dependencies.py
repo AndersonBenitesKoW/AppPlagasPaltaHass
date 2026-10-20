@@ -33,8 +33,29 @@ def get_listar_historial(
     return container.listar_historial(sesion)
 
 
-def get_eliminar_diagnostico(
+def get_mover_a_papelera(
     container: Any = Depends(get_container),
     sesion: AsyncSession = Depends(get_sesion),
 ) -> Any:
-    return container.eliminar_diagnostico(sesion)
+    return container.mover_a_papelera(sesion)
+
+
+def get_restaurar_diagnostico(
+    container: Any = Depends(get_container),
+    sesion: AsyncSession = Depends(get_sesion),
+) -> Any:
+    return container.restaurar_diagnostico(sesion)
+
+
+def get_eliminar_definitivo(
+    container: Any = Depends(get_container),
+    sesion: AsyncSession = Depends(get_sesion),
+) -> Any:
+    return container.eliminar_definitivo(sesion)
+
+
+def get_vaciar_papelera(
+    container: Any = Depends(get_container),
+    sesion: AsyncSession = Depends(get_sesion),
+) -> Any:
+    return container.vaciar_papelera(sesion)

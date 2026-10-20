@@ -9,8 +9,11 @@ from .modules.diagnostico.application.ports import DetectorEnfermedades
 from .modules.diagnostico.application.use_cases.diagnosticar_imagen import (
     DiagnosticarImagen,
 )
-from .modules.diagnostico.application.use_cases.eliminar_diagnostico import (
-    EliminarDiagnostico,
+from .modules.diagnostico.application.use_cases.papelera import (
+    EliminarDefinitivo,
+    MoverAPapelera,
+    RestaurarDiagnostico,
+    VaciarPapelera,
 )
 from .modules.diagnostico.application.use_cases.listar_historial import ListarHistorial
 from .modules.diagnostico.application.use_cases.obtener_diagnostico import (
@@ -113,13 +116,23 @@ class Container:
             almacen=self.almacen,
         )
 
-    def eliminar_diagnostico(self, sesion: AsyncSession) -> EliminarDiagnostico:
+    def mover_a_papelera(self, sesion: AsyncSession) -> MoverAPapelera:
         repositorio = RepositorioDiagnosticosSql(sesion)
-        return EliminarDiagnostico(
-            lectura=repositorio,
-            escritura=repositorio,
-            almacen=self.almacen,
+        return MoverAPapelera(lectura=repositorio, escritura=repositorio, reloj=self.reloj)
+
+    def restaurar_diagnostico(self, sesion: AsyncSession) -> RestaurarDiagnostico:
+        repositorio = RepositorioDiagnosticosSql(sesion)
+        return RestaurarDiagnostico(
+            lectura=repositorio, escritura=repositorio, almacen=self.almacen
         )
+
+    def eliminar_definitivo(self, sesion: AsyncSession) -> EliminarDefinitivo:
+        repositorio = RepositorioDiagnosticosSql(sesion)
+        return EliminarDefinitivo(lectura=repositorio, escritura=repositorio, almacen=self.almacen)
+
+    def vaciar_papelera(self, sesion: AsyncSession) -> VaciarPapelera:
+        repositorio = RepositorioDiagnosticosSql(sesion)
+        return VaciarPapelera(lectura=repositorio, escritura=repositorio, almacen=self.almacen)
 
     def listar_historial(self, sesion: AsyncSession) -> ListarHistorial:
         return ListarHistorial(

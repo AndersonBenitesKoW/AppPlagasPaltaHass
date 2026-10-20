@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useHistorial } from '../hooks/useHistorial';
 import { useEliminarDiagnostico } from '../hooks/useEliminarDiagnostico';
+import { usePapelera } from '../hooks/usePapelera';
+import { PapeleraLista } from './PapeleraLista';
 import { exportarReporteInspeccion } from '../lib/reporte-inspeccion';
 import { Card } from '../../../shared/ui/Card';
 import { Badge, type BadgeVariant } from '../../../shared/ui/Badge';
@@ -62,6 +64,8 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
   const [filtro, setFiltro] = useState<'todos' | 'enfermos' | 'sanos'>('todos');
   const [origen, setOrigen] = useState<Origen | 'todos'>('todos');
   const eliminar = useEliminarDiagnostico();
+  const { data: papelera } = usePapelera();
+  const [verPapelera, setVerPapelera] = useState(false);
   // 'todo' = exportando la lista completa; un id = exportando ese registro.
   const [exportando, setExportando] = useState<string | null>(null);
   const [errorAccion, setErrorAccion] = useState<string | null>(null);
@@ -83,7 +87,11 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
       dateStyle: 'medium',
       timeStyle: 'short',
     });
-    if (!window.confirm(`¿Eliminar el registro del ${fecha}? Esta acción no se puede deshacer.`)) {
+    if (
+      !window.confirm(
+        `¿Mover a la papelera el registro del ${fecha}? Podrás restaurarlo desde la papelera.`,
+      )
+    ) {
       return;
     }
     setErrorAccion(null);
@@ -91,6 +99,10 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
       onError: () => setErrorAccion('No se pudo eliminar el registro.'),
     });
   };
+
+  if (verPapelera) {
+    return <PapeleraLista onVolver={() => setVerPapelera(false)} />;
+  }
 
   if (isLoading) {
     return (
@@ -195,8 +207,8 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
             variant="danger"
             size="icon"
             className="h-9 w-9"
-            title="Eliminar registro"
-            aria-label="Eliminar registro"
+            title="Mover a la papelera"
+            aria-label="Mover a la papelera"
             disabled={eliminar.isPending && eliminar.variables === item.id}
             onClick={(e) => {
               e.stopPropagation();
@@ -255,6 +267,15 @@ export const HistorialLista: React.FC<HistorialListaProps> = ({ onVerDetalle }) 
         </div>
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 self-stretch sm:self-auto">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setVerPapelera(true)}
+            title="Ver los registros eliminados"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            Papelera ({papelera?.length ?? 0})
+          </Button>
           <Button
             variant="outline"
             size="sm"

@@ -13,12 +13,14 @@ class ListarHistorial:
         usuario: Usuario,
         limite: int = 50,
         desplazamiento: int = 0,
+        en_papelera: bool = False,
     ) -> list[DiagnosticoDTO]:
         propietario = None if usuario.puede_ver_todo else usuario.id
         entidades = await self._lectura.recientes(
             propietario_id=propietario,
             limite=limite,
             desplazamiento=desplazamiento,
+            en_papelera=en_papelera,
         )
         resultados: list[DiagnosticoDTO] = []
         for ent in entidades:

@@ -33,6 +33,7 @@ class DiagnosticoResponse(BaseModel):
     imagen_url: str
     creado_en: datetime
     origen: Origen
+    eliminado_en: datetime | None = None
 
 
 class DiagnosticosBatchResponse(BaseModel):
@@ -40,3 +41,7 @@ class DiagnosticosBatchResponse(BaseModel):
     total: int
     total_enfermos: int
     total_sanos: int
+
+
+class PapeleraVaciadaResponse(BaseModel):
+    eliminados: int

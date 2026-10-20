@@ -5,8 +5,11 @@ from fastapi import APIRouter, Depends, File, Form, Request, Response, UploadFil
 
 from plagas.modules.diagnostico.application.dtos import DiagnosticarImagenCommand
 from plagas.modules.diagnostico.application.use_cases.diagnosticar_imagen import DiagnosticarImagen
-from plagas.modules.diagnostico.application.use_cases.eliminar_diagnostico import (
-    EliminarDiagnostico,
+from plagas.modules.diagnostico.application.use_cases.papelera import (
+    EliminarDefinitivo,
+    MoverAPapelera,
+    RestaurarDiagnostico,
+    VaciarPapelera,
 )
 from plagas.modules.diagnostico.application.use_cases.listar_historial import ListarHistorial
 from plagas.modules.diagnostico.application.use_cases.obtener_diagnostico import ObtenerDiagnostico
@@ -17,11 +20,14 @@ from plagas.shared.domain.identidad import Usuario
 
 from .dependencies import (
     get_diagnosticar_imagen,
-    get_eliminar_diagnostico,
+    get_eliminar_definitivo,
     get_listar_historial,
+    get_mover_a_papelera,
     get_obtener_diagnostico,
+    get_restaurar_diagnostico,
+    get_vaciar_papelera,
 )
-from .schemas import DiagnosticoResponse, DiagnosticosBatchResponse
+from .schemas import DiagnosticoResponse, DiagnosticosBatchResponse, PapeleraVaciadaResponse
 
 router = APIRouter(prefix="/diagnosticos", tags=["diagnosticos"])
 UsuarioActual = Annotated[Usuario, Depends(get_usuario_actual)]
@@ -99,6 +105,31 @@ async def listar_historial(
     return [DiagnosticoResponse.model_validate(d, from_attributes=True) for d in dtos]
 
 
+# Las rutas fijas de la papelera van antes de /{diagnostico_id} para que no las capture.
+@router.get("/papelera", response_model=list[DiagnosticoResponse])
+async def listar_papelera(
+    usuario: UsuarioActual,
+    caso_uso: Annotated[ListarHistorial, Depends(get_listar_historial)],
+    limite: int = 100,
+    desplazamiento: int = 0,
+) -> list[DiagnosticoResponse]:
+    dtos = await caso_uso.ejecutar(
+        usuario=usuario,
+        limite=limite,
+        desplazamiento=desplazamiento,
+        en_papelera=True,
+    )
+    return [DiagnosticoResponse.model_validate(d, from_attributes=True) for d in dtos]
+
+
+@router.delete("/papelera", response_model=PapeleraVaciadaResponse)
+async def vaciar_papelera(
+    usuario: UsuarioActual,
+    caso_uso: Annotated[VaciarPapelera, Depends(get_vaciar_papelera)],
+) -> PapeleraVaciadaResponse:
+    return PapeleraVaciadaResponse(eliminados=await caso_uso.ejecutar(usuario))
+
+
 @router.get("/{diagnostico_id}", response_model=DiagnosticoResponse)
 async def obtener_diagnostico(
     diagnostico_id: UUID,
@@ -109,11 +140,32 @@ async def obtener_diagnostico(
     return DiagnosticoResponse.model_validate(dto, from_attributes=True)
 
 
+
 @router.delete("/{diagnostico_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def eliminar_diagnostico(
+async def mover_a_papelera(
     diagnostico_id: UUID,
     usuario: UsuarioActual,
-    caso_uso: Annotated[EliminarDiagnostico, Depends(get_eliminar_diagnostico)],
+    caso_uso: Annotated[MoverAPapelera, Depends(get_mover_a_papelera)],
+) -> Response:
+    await caso_uso.ejecutar(diagnostico_id, usuario)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/{diagnostico_id}/restaurar", response_model=DiagnosticoResponse)
+async def restaurar_diagnostico(
+    diagnostico_id: UUID,
+    usuario: UsuarioActual,
+    caso_uso: Annotated[RestaurarDiagnostico, Depends(get_restaurar_diagnostico)],
+) -> DiagnosticoResponse:
+    dto = await caso_uso.ejecutar(diagnostico_id, usuario)
+    return DiagnosticoResponse.model_validate(dto, from_attributes=True)
+
+
+@router.delete("/{diagnostico_id}/definitivo", status_code=status.HTTP_204_NO_CONTENT)
+async def eliminar_definitivo(
+    diagnostico_id: UUID,
+    usuario: UsuarioActual,
+    caso_uso: Annotated[EliminarDefinitivo, Depends(get_eliminar_definitivo)],
 ) -> Response:
     await caso_uso.ejecutar(diagnostico_id, usuario)
     return Response(status_code=status.HTTP_204_NO_CONTENT)

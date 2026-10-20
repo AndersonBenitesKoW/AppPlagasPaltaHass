@@ -24,6 +24,8 @@ export interface Diagnostico {
   imagen_url: string;
   creado_en: string;
   origen: Origen;
+  /** Fecha en que se movió a la papelera; null si está en el historial. */
+  eliminado_en?: string | null;
   conclusiones?: {
     recomendaciones_agronomicas?: string[];
   };
