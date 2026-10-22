@@ -34,13 +34,13 @@ Se agregaron en la nueva base teórica sobre YOLO y sus métricas, con referenci
 
 Se alineó solo la meta con resultados disponibles: **precisión del modelo** (alto ≥ 85 %, aceptable 70–84 %, bajo < 70 % en mAP50; HE1 ≥ 70 %).
 
-Resultados en el split **test** (Cap. III): hojas mAP50 = 84.8 % (aceptable, a 0.2 puntos del nivel alto) y frutos mAP50 = 76.4 % (aceptable). En validación eran 91.6 % y 78.7 %. La HE1 se acepta con la prueba binomial (p < 0.001).
+Resultados en el split **test** (Cap. III, **v5**, 2 modelos): hojas = `hojas_tiempo_real` (YOLO11n, 640 px) mAP50 = 88.8 % (alto), exactitud 92.8 %; frutos (YOLO11s, 1024 px) mAP50 = 76.4 % (aceptable), exactitud 86.6 %. HE1 aceptada (p < 0.001); hojas también supera la meta del 85 %.
 
 Pendientes de contrastar cuando estén los datos de campo:
 
 | Dimensión | Meta actual en el Anexo 2 | Dato necesario |
 |---|---|---|
-| Velocidad de procesamiento | ≤ 150 ms por imagen | En CPU i7-12700 se midieron 176 ms (hojas) y 511 ms (frutos), así que la meta **no se cumple en CPU**. Medir en el servidor desplegado o redefinir la meta a ≤ 1 s por imagen |
+| Velocidad de procesamiento | ≤ 150 ms por imagen | En CPU i7-12700: hojas 45 ms a 640 px (**cumple**), frutos 511 ms a 1024 px (**no cumple en CPU**). Medir en el servidor desplegado o redefinir la meta a ≤ 1 s por imagen |
 | Capacidad de detección temprana | sensibilidad > 90 % (alta) | Ya calculada en el Cap. III, tablas 12 y 13. La tasa de detección va de 70.6 % a 97.1 %; las lesiones pequeñas (< 2 % del área) dan 0/17. **La meta de > 90 % no se cumple**: bajarla a ≥ 70 % o justificarlo |
 | Precisión diagnóstica (VD) | coincidencia con el experto ≥ 85 % | Diagnóstico del agrónomo por árbol (pre y post) |
 | Tiempo de inspección (VD) | reducción ≥ 50 % | Tiempos cronometrados por árbol (manual y con sistema) |
@@ -52,7 +52,10 @@ Pendientes de contrastar cuando estén los datos de campo:
 - [x] Matrices de confusión: las de Ultralytics 8.4 (`plots_*/confusion_matrix*.png`) usan conf = 0.001 y **no deben usarse**. Las válidas están en `figuras/cm_*.png` (umbral 0.35) y van en el Cap. III como Figuras 4 y 5.
 - [ ] La corrida `frutos-entrenamiento/frutos_preciso` se **interrumpió** (no fue parada temprana) en la época 109 de 200, tras 5.0 h. Los checkpoints conservan el optimizador y la parada temprana recién tocaba en la época 133. Opcional: reanudarla con `YOLO('last.pt').train(resume=True)`.
 - [ ] Limpiar `backend/models/frutos.pt` (76 MB, incluye el optimizador) con `strip_optimizer`; queda en unos 19 MB.
-- [ ] La carpeta `frutos/hojas/` (corrida de hojas) se borró del directorio de trabajo, pero sigue en git. Restaurarla con `git checkout -- frutos/hojas`.
+- [ ] La carpeta `frutos/hojas/` (corrida antigua de hojas) se borró del directorio de trabajo, pero sigue en git. Restaurarla con `git checkout -- frutos/hojas` o confirmar el borrado (ya la reemplaza `hojas-entrenamiento/`).
+- [x] **Revisar `backend/models/hojas.pt`**: en el working tree (staged) ahora es el modelo YOLO11n de tiempo real (= `hojas_tiempo_real/weights/hojas.pt`), pero el backend lo corre a `yolo_imgsz` 1024. El commit db111520 tenía `hojas_preciso` (YOLO11s). Decidido (21/10): el modelo de hojas de la tesis es `hojas_tiempo_real` (640 px). Backend configurado (21/10): `yolo_imgsz_hojas` = 640 y `yolo_imgsz_frutos` = 1024 en `config.py` (variables `APP_YOLO_IMGSZ_HOJAS` / `APP_YOLO_IMGSZ_FRUTOS`). Falta actualizar las variables y el SHA256 de hojas en Railway.
+- [ ] El modelo de tiempo real de hojas aún no está exportado a ONNX en `frontend/public/modelos/hojas.onnx` (el actual es de 38 MB, del 19/10). Exportar `hojas_tiempo_real` a ONNX 640 para que el Cap. III coincida con lo desplegado.
+- [ ] Agregar Landis y Koch (1977) a las referencias (se cita en el Cap. III para interpretar κ).
 - [ ] Las 18 inspecciones del PDF son del 7/10/2026, es decir, del modelo de frutos **anterior**. Repetir las inspecciones con el modelo nuevo.
 - [ ] 6 de 18 registros (33 %) tenían mal seleccionado el órgano. Conviene validar el órgano automáticamente o mostrar una confirmación en la app.
 - [ ] **Error en la app**: las acciones recomendadas muestran el texto de "sano" (mantener riego y fertilización) también en las inspecciones con alerta.
@@ -74,3 +77,24 @@ Pendientes de contrastar cuando estén los datos de campo:
 - [x] Numeración de tablas: corregida en el v3 (Cap. II: tablas 1 y 2; Cap. III desde la Tabla 3).
 - [ ] Citar a Landis y Koch (1977) para la interpretación de κ (moderado/sustancial) del Cap. III y agregarlo a Referencias.
 - [ ] Cap. IV (Discusión y conclusiones) sigue siendo la plantilla de la tesis de referencia.
+
+## Datos simulados (v6, 21/10/2026)
+- Las Tablas 11, 14 y 16 del Cap. III (tiempos, descarte y contraste de HE2/HE3) usan **datos simulados declarados como resultados esperados**: `resultados-cap3/simulacion/` (`simulacion.py` con semilla 2026, `datos_simulados_campo.xlsx`).
+- [ ] En la tesis: reemplazar por las fichas de campo (mismas columnas del Excel) y volver a correr el análisis.
+- [ ] Diagnóstico del especialista agrónomo sobre las fotos del historial: sigue pendiente; debe ser real.
+
+## Instrumentos de campo (21/10/2026)
+- `Instrumentos de recoleccion de datos - fichas de campo.docx`: protocolo + Fichas 1–4 + cuestionario (para anexos; poner el número de anexo en «Anexo __» y reemplazar el Anexo 3 de artesanos, que es de la plantilla).
+- `resultados-cap3/simulacion/plantilla_vaciado_fichas_campo.xlsx`: vaciado con fórmulas (duraciones, % de descarte, promedio del cuestionario).
+- Muestra: 100 árboles (50 A + 50 B), 5 hojas + 5 frutos por árbol (1,000 imágenes), 60 frutos por árbol para descarte, 200 imágenes para concordancia con el especialista.
+
+## Fotos de ejemplo para el Cap. III (próxima semana)
+- [ ] Tomar en campo con la app 4 a 6 fotos de ejemplo para figuras: hoja con antracnosis detectada, hoja con plagas, fruto con antracnosis/roña, fruto sano, un caso de error del sistema y una captura de la app en uso en el fundo.
+- [ ] Exportar las capturas con las cajas de detección desde el historial y pasármelas para insertarlas como figuras (con su nota APA) en la sección «Verificación en campo con el sistema desplegado».
+- `Fichas 1 y 2 - ejemplo de llenado (datos simulados).docx`: ejemplo de llenado marcado como datos simulados (árboles A-01 a A-08 de `datos_simulados_campo.xlsx`); sirve para mostrar cómo se completa cada ficha.
+- v8 (`... - v8 Cap III resultados y anexos.docx`): Fichas 1 y 2 de ejemplo insertadas como **Anexos 7 y 8** (páginas horizontales, marcadas como datos simulados). Actualizar el índice de anexos con Ctrl+A → F9 → «Actualizar toda la tabla».
+
+## v9 (22/10/2026): coherencia Cap. I–II y Anexo 2
+- Archivo: `... - v9 Cap I-II coherencia.docx` (cambios anteriores ya aceptados; solo quedan marcadas las correcciones nuevas; script `resultados-cap3/edit_v9.py`).
+- Anexo 2 alineado: metas de reducción ≥ 30 % (tiempo) y ≥ 15 % (descarte); velocidad ≤ 150 ms (tiempo real, hojas) / ≤ 1,000 ms (servidor, frutos).
+- [ ] Sin tocar a pedido del usuario: Resumen/Abstract, Cap. IV, Anexo 1, Anexos 3–6 (artesanos), referencias (MIDAGRI, CONCYTEC, Landis y Koch).

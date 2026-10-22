@@ -12,9 +12,12 @@ IMGSZ = 1024
 CFG = {
     "frutos": (ROOT / "backend/models/frutos.pt", ROOT / "ml/datasets/DatasetFrutos",
                ["fruto_sano", "antracnosis_fruto", "cercospora", "rona", "pudricion_peduncular", "sunblotch"]),
-    "hojas": (ROOT / "backend/models/hojas.pt", ROOT / "ml/datasets/DatasetHojas",
+    "hojas": (ROOT / "hojas-entrenamiento/hojas_preciso/weights/best.pt", ROOT / "ml/datasets/DatasetHojas",
               ["hoja_sana", "antracnosis_hoja", "plaga", "deficiencia_nutricional"]),
+    "hojas_rt": (ROOT / "hojas-entrenamiento/hojas_tiempo_real/weights/hojas.pt", ROOT / "ml/datasets/DatasetHojas",
+                 ["hoja_sana", "antracnosis_hoja", "plaga", "deficiencia_nutricional"]),
 }
+IMG = {"hojas_rt": 640}  # modelo ligero de tiempo real (yolo11n a 640)
 
 
 def wilson(k, n, z=1.96):
@@ -41,6 +44,7 @@ def xywh2xyxy(x, y, w, h):
 
 def run(nombre):
     pesos, ds, clases = CFG[nombre]
+    IMGSZ = IMG.get(nombre, 1024)
     yml = S / f"data_{nombre}.yaml"
     yml.write_text(f"path: {ds.as_posix()}\ntrain: train/images\nval: valid/images\ntest: test/images\n"
                    f"nc: {len(clases)}\nnames: {json.dumps(clases)}\n", encoding="utf8")

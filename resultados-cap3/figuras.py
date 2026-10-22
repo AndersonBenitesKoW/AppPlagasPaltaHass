@@ -42,30 +42,34 @@ def leer(p):
 
 
 def curvas():
-    fig, axs = plt.subplots(1, 2, figsize=(7.2, 3.0), sharey=True)
-    for ax, (t, p) in zip(axs, [("Modelo de hojas", S / "hojas_run/results.csv"),
-                                ("Modelo de frutos", Path("D:/AppWebPlagasPaltaHass/frutos-entrenamiento/frutos_preciso/results.csv"))]):
+    H = Path("D:/AppWebPlagasPaltaHass/hojas-entrenamiento")
+    runs = [("Hojas (YOLO11s, 1024 px)", H / "hojas_preciso/results.csv"),
+            ("Hojas – tiempo real (YOLO11n, 640 px)", H / "hojas_tiempo_real/results.csv"),
+            ("Frutos (YOLO11s, 1024 px)", Path("D:/AppWebPlagasPaltaHass/frutos-entrenamiento/frutos_preciso/results.csv"))]
+    fig, axs = plt.subplots(1, 3, figsize=(8.4, 3.0), sharey=True)
+    for ax, (t, p) in zip(axs, runs):
         e, a, b = leer(p)
         ax.plot(e, a, color=VERDE, lw=1.4, label="mAP50")
         ax.plot(e, b, color=GRIS, lw=1.4, ls="--", label="mAP50-95")
         ax.axhline(0.70, color="black", lw=0.8, ls=":")
         ax.text(e[-1], 0.705, "umbral 70 %", ha="right", va="bottom", fontsize=9)
-        ax.set_title(t, fontsize=11); ax.set_xlabel("Época"); ax.set_ylim(0, 1)
+        ax.set_title(t, fontsize=10); ax.set_xlabel("Época"); ax.set_ylim(0, 1)
     axs[0].set_ylabel("Valor de la métrica (validación)")
     axs[0].legend(frameon=False, loc="lower right")
     fig.tight_layout(); fig.savefig(F / "curvas.png"); plt.close(fig)
 
 
 def recall_clase():
-    fig, axs = plt.subplots(1, 2, figsize=(7.4, 3.2), gridspec_kw={"width_ratios": [6, 4]})
-    for ax, n in zip(axs, ["frutos", "hojas"]):
+    mods = [("frutos", "Frutos (servidor)"), ("hojas", "Hojas (servidor)"), ("hojas_rt", "Hojas (tiempo real)")]
+    fig, axs = plt.subplots(1, 3, figsize=(8.6, 3.3), sharey=True, gridspec_kw={"width_ratios": [6, 4, 4]})
+    for ax, (n, t) in zip(axs, mods):
         d = json.loads((S / f"eval_{n}.json").read_text(encoding="utf8"))["por_clase"]
         ks = list(d)
         ax.bar(range(len(ks)), [d[k]["R"] * 100 for k in ks],
                color=[GRIS if k.endswith("sana") or k.endswith("sano") else VERDE for k in ks])
         ax.set_xticks(range(len(ks))); ax.set_xticklabels([ETQ[k] for k in ks], rotation=35, ha="right", fontsize=9)
         ax.axhline(70, color="black", lw=0.8, ls=":")
-        ax.set_ylim(0, 100); ax.set_title("Modelo de " + n, fontsize=11)
+        ax.set_ylim(0, 105); ax.set_title(t, fontsize=10.5)
         for i, k in enumerate(ks):
             ax.text(i, d[k]["R"] * 100 + 1.5, f"{d[k]['R'] * 100:.1f}", ha="center", fontsize=8.5)
     axs[0].set_ylabel("Sensibilidad (recall, %)")
@@ -91,3 +95,75 @@ def tamano():
 if __name__ == "__main__":
     flujo(); curvas(); recall_clase(); tamano()
     print(sorted(p.name for p in F.iterdir()))
+
+
+def matriz(nombre, conf="0.35"):
+    """Matriz de confusion en espanol: filas = clase real (normalizadas), columnas = prediccion."""
+    import numpy as np
+    from matplotlib.colors import LinearSegmentedColormap
+    d = json.loads((S / "cm_test.json").read_text(encoding="utf8"))[nombre][conf]
+    M = np.array(d["matrix"]).T          # Ultralytics: [pred, real] -> [real, pred]
+    nc = len(d["names"])
+    et = [ETQ[n] for n in d["names"]]
+    filas = et + ["Fondo (sin etiqueta)"]
+    cols = et + ["No detectado"]
+    M = M[: nc + 1, : nc + 1]
+    norm = np.zeros_like(M, dtype=float)
+    for i in range(nc):
+        s = M[i].sum()
+        norm[i] = M[i] / s if s else 0
+    cmap = LinearSegmentedColormap.from_list("v", ["#FFFFFF", VERDE])
+    fig, ax = plt.subplots(figsize=(1.05 * (nc + 1) + 1.6, 0.85 * (nc + 1) + 1.2))
+    ax.imshow(np.vstack([norm[:nc], np.zeros((1, nc + 1))]), cmap=cmap, vmin=0, vmax=1, aspect="auto")
+    for i in range(nc + 1):
+        for j in range(nc + 1):
+            n = M[i, j]
+            if i == nc and j == nc:
+                txt = ""
+            elif i < nc:
+                txt = f"{norm[i, j] * 100:.1f} %\n({n})" if n else "—"
+            else:
+                txt = f"({n})" if n else "—"
+            ax.text(j, i, txt, ha="center", va="center", fontsize=8.5,
+                    color="white" if i < nc and norm[i, j] > 0.55 else "black")
+    ax.set_xticks(range(nc + 1)); ax.set_xticklabels(cols, rotation=35, ha="right", fontsize=9)
+    ax.set_yticks(range(nc + 1)); ax.set_yticklabels(filas, fontsize=9)
+    ax.set_xlabel("Clase predicha por el sistema"); ax.set_ylabel("Clase real (etiqueta)")
+    ax.axhline(nc - 0.5, color="black", lw=0.8); ax.axvline(nc - 0.5, color="black", lw=0.8)
+    for s_ in ("top", "right"):
+        ax.spines[s_].set_visible(True)
+    fig.tight_layout(); fig.savefig(F / f"cm_{nombre}.png"); plt.close(fig)
+    return M.tolist()
+
+
+def curvas2():
+    """Curvas de los dos modelos de la tesis: hojas (YOLO11n, 640 px) y frutos (YOLO11s, 1024 px)."""
+    runs = [("Modelo de hojas (YOLO11n, 640 px)", Path("D:/AppWebPlagasPaltaHass/hojas-entrenamiento/hojas_tiempo_real/results.csv")),
+            ("Modelo de frutos (YOLO11s, 1024 px)", Path("D:/AppWebPlagasPaltaHass/frutos-entrenamiento/frutos_preciso/results.csv"))]
+    fig, axs = plt.subplots(1, 2, figsize=(7.2, 3.0), sharey=True)
+    for ax, (t, p) in zip(axs, runs):
+        e, a, b = leer(p)
+        ax.plot(e, a, color=VERDE, lw=1.4, label="mAP50")
+        ax.plot(e, b, color=GRIS, lw=1.4, ls="--", label="mAP50-95")
+        ax.axhline(0.70, color="black", lw=0.8, ls=":")
+        ax.text(e[-1], 0.705, "umbral 70 %", ha="right", va="bottom", fontsize=9)
+        ax.set_title(t, fontsize=11); ax.set_xlabel("Época"); ax.set_ylim(0, 1)
+    axs[0].set_ylabel("Valor de la métrica (validación)")
+    axs[0].legend(frameon=False, loc="lower right")
+    fig.tight_layout(); fig.savefig(F / "curvas2.png"); plt.close(fig)
+
+
+def recall2():
+    fig, axs = plt.subplots(1, 2, figsize=(7.4, 3.2), gridspec_kw={"width_ratios": [6, 4]})
+    for ax, (n, t) in zip(axs, [("frutos", "Modelo de frutos"), ("hojas_rt", "Modelo de hojas")]):
+        d = json.loads((S / f"eval_{n}.json").read_text(encoding="utf8"))["por_clase"]
+        ks = list(d)
+        ax.bar(range(len(ks)), [d[k]["R"] * 100 for k in ks],
+               color=[GRIS if k.endswith("sana") or k.endswith("sano") else VERDE for k in ks])
+        ax.set_xticks(range(len(ks))); ax.set_xticklabels([ETQ[k] for k in ks], rotation=35, ha="right", fontsize=9)
+        ax.axhline(70, color="black", lw=0.8, ls=":")
+        ax.set_ylim(0, 105); ax.set_title(t, fontsize=11)
+        for i, k in enumerate(ks):
+            ax.text(i, d[k]["R"] * 100 + 1.5, f"{d[k]['R'] * 100:.1f}", ha="center", fontsize=8.5)
+    axs[0].set_ylabel("Sensibilidad (recall, %)")
+    fig.tight_layout(); fig.savefig(F / "recall2.png"); plt.close(fig)

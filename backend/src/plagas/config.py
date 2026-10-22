@@ -27,7 +27,9 @@ class Settings(BaseSettings):
     modelos_dir: Path = Path("models")
     modelo_hojas: str = "hojas.pt"
     modelo_frutos: str = "frutos.pt"
-    yolo_imgsz: int = 1024
+    # Resolución de inferencia de cada modelo: la misma con la que se entrenó.
+    yolo_imgsz_hojas: int = 640  # hojas_tiempo_real (YOLO11n)
+    yolo_imgsz_frutos: int = 1024  # frutos (YOLO11s)
     umbral_confianza: float = 0.35
 
     almacen: Literal["local", "s3"] = "local"

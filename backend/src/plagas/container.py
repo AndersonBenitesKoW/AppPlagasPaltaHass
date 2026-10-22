@@ -58,7 +58,7 @@ class Container:
             verificar_sha256(ruta_hojas, settings.sha256_modelo_hojas)
             detectores_dict[Organo.HOJA] = DetectorYolo(
                 ruta_pesos=ruta_hojas,
-                imgsz=settings.yolo_imgsz,
+                imgsz=settings.yolo_imgsz_hojas,
                 conf_minima=0.10,
             )
         # 2. Cargar detector de frutos si existe el archivo
@@ -67,7 +67,7 @@ class Container:
             verificar_sha256(ruta_frutos, settings.sha256_modelo_frutos)
             detectores_dict[Organo.FRUTO] = DetectorYolo(
                 ruta_pesos=ruta_frutos,
-                imgsz=settings.yolo_imgsz,
+                imgsz=settings.yolo_imgsz_frutos,
                 conf_minima=0.10,
             )
 
